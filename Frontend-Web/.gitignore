@@ -1,0 +1,48 @@
+# Node.js
+node_modules/
+dist/
+.vite/
+
+# Logs e arquivos do sistema
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Diretórios de build
+build/
+out/
+.cache/
+.eslintcache
+.next/
+.nuxt/
+.svelte-kit/
+.storybook-out/
+coverage/
+
+# Configuração do Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos ambientais (NUNCA versionar .env!)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Arquivos de lock (evitar conflitos entre gerenciadores de pacotes)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Tailwind e PostCSS
+*.css.map
+postcss.config.js
+tailwind.config.js
