@@ -5,7 +5,7 @@ import logo from "../../assets/images/LogoAPI.png";
 import avatar from "../../assets/react.svg";
 
 const Header: React.FC = () => {
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [DropdownOpen, setDropdownOpen] = useState(false);
   const { logout } = useAuth();
   const location = useLocation(); // Obtém a URL atual
 
@@ -59,7 +59,7 @@ const Header: React.FC = () => {
       {/* Lado Direito: Nome do usuário + Ícone */}
       <div className="relative flex items-center gap-2" ref={dropdownRef}>
         <span className="text-sm font-medium">{user.name}</span>
-        <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="focus:outline-none">
+        <button onClick={() => setDropdownOpen(!DropdownOpen)} className="focus:outline-none">
           <img
             src={user.avatar}
             alt="Usuário"
@@ -68,7 +68,7 @@ const Header: React.FC = () => {
         </button>
 
         {/* Dropdown (Menu do Usuário) */}
-        {isDropdownOpen && (
+        {DropdownOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white text-gray-800 shadow-lg rounded-md">
             <ul>
               <li>

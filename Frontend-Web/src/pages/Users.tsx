@@ -26,7 +26,7 @@ const Users: React.FC = () => {
     const [users, setUsers] = useState<User[]>(initialUsers);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
-    const [isChatOpen, setChatOpen] = useState(false);
+    const [ChatOpen, setChatOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState(""); // Novo estado para a pesquisa
 
     // Abrir formulário para criar ou editar usuário
@@ -105,7 +105,7 @@ const Users: React.FC = () => {
             <ChatbotButton onClick={() => setChatOpen(true)} />
 
             {/* Modal do Chatbot */}
-            <ChatbotModal isOpen={isChatOpen} onClose={() => setChatOpen(false)} />
+            <ChatbotModal isOpen={ChatOpen} onClose={() => setChatOpen(false)} />
         </div>
     );
 };

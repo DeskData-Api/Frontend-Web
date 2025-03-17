@@ -16,9 +16,9 @@ interface UserFormProps {
 const UserForm: React.FC<UserFormProps> = ({ user, onClose, onSave }) => {
   const [formData, setFormData] = useState<User>({
     id: user?.id ?? 0, // ID só será gerado ao salvar
-    name: user?.name || "",
-    email: user?.email || "",
-    role: user?.role || "Viewer",
+    name: user?.name ?? "",
+    email: user?.email ?? "",
+    role: user?.role ?? "Viewer",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -39,9 +39,12 @@ const UserForm: React.FC<UserFormProps> = ({ user, onClose, onSave }) => {
         <h2 className="text-xl font-bold mb-4">{user ? "Editar Usuário" : "Criar Usuário"}</h2>
 
         <div className="mb-4">
-          <label className="block text-sm font-semibold">Nome</label>
+          <label htmlFor="name" className="block text-sm font-semibold">
+            Nome
+          </label>
           <input
             type="text"
+            id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
@@ -49,10 +52,14 @@ const UserForm: React.FC<UserFormProps> = ({ user, onClose, onSave }) => {
           />
         </div>
 
+
         <div className="mb-4">
-          <label className="block text-sm font-semibold">E-mail</label>
+          <label htmlFor="email" className="block text-sm font-semibold">
+            E-mail
+          </label>
           <input
             type="email"
+            id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
@@ -60,10 +67,12 @@ const UserForm: React.FC<UserFormProps> = ({ user, onClose, onSave }) => {
           />
         </div>
 
+
         <div className="mb-4">
-          <label className="block text-sm font-semibold">Tipo de Usuário</label>
+          <label htmlFor="role" className="block text-sm font-semibold">Tipo de Usuário</label>
           <select
             name="role"
+            id="role"
             value={formData.role}
             onChange={handleChange}
             className="w-full border p-2 rounded mt-1"
