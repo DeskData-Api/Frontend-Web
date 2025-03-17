@@ -6,7 +6,7 @@ import ChatbotButton from '../components/ui/ChatbotButton';
 import ChatbotModal from '../components/ui/ChatbotModal';
 
 const Dashboard: React.FC = () => {
-  const [isChatOpen, setChatOpen] = useState(false);
+  const [ChatOpen, setChatOpen] = useState(false);
 
   return (
     <div className="flex h-screen">
@@ -19,7 +19,7 @@ const Dashboard: React.FC = () => {
         <ChatbotButton onClick={() => setChatOpen(true)} />
 
         {/* Modal do Chatbot */}
-        <ChatbotModal isOpen={isChatOpen} onClose={() => setChatOpen(false)} />
+        <ChatbotModal isOpen={ChatOpen} onClose={() => setChatOpen(false)} />
       </div>
     </div>
   );

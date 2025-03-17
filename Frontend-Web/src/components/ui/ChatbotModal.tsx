@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid"; // Biblioteca para gerar IDs únicos
 
 interface ChatbotModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+interface ChatResponse {
+  id: string;
+  text: string;
+}
+
 const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState("");
-  const [responses, setResponses] = useState<string[]>([]);
+  const [responses, setResponses] = useState<ChatResponse[]>([]);
 
   useEffect(() => {
+    const showElement = () => setIsVisible(true);
+    const hideElement = () => setTimeout(() => setIsVisible(false), 300); // Tempo da animação
+
     if (isOpen) {
-      setIsVisible(true);
+      showElement();
     } else {
-      setTimeout(() => setIsVisible(false), 300); // Tempo da animação
+      hideElement();
     }
   }, [isOpen]);
 
@@ -22,9 +31,12 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
     if (message.trim() === "") return;
 
     // Simulação de resposta do PLN (Substituir pela integração real)
-    const botResponse = `🤖 Resposta do PLN para: "${message}"`;
-    setResponses([...responses, botResponse]);
+    const botResponse = {
+      id: uuidv4(), // Gera um identificador único
+      text: `🤖 Resposta do PLN para: "${message}"`,
+    };
 
+    setResponses([...responses, botResponse]);
     setMessage("");
   };
 
@@ -47,8 +59,8 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
           {responses.length === 0 ? (
             <p className="text-gray-500">Comece a conversar...</p>
           ) : (
-            responses.map((res, index) => (
-              <p key={index} className="text-gray-700 mb-2">{res}</p>
+            responses.map((res) => (
+              <p key={res.id} className="text-gray-700 mb-2">{res.text}</p>
             ))
           )}
         </div>
