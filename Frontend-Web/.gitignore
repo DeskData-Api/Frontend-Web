@@ -42,11 +42,6 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Tailwind e PostCSS
-*.css.map
-postcss.config.js
-tailwind.config.js
-
 # 🧪 Vitest
 coverage/  # ❗ Evita versionar relatórios de cobertura de testes
 .vitest/   # ❗ Diretório de cache do Vitest
