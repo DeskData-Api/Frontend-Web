@@ -4,8 +4,8 @@ import ChartsSection from "./ChartsSection";
 
 const Content: React.FC = () => {
   return (
-    <main className="w-full h-screen overflow-y-scroll snap-y snap-mandatory pb-20">
-      <WelcomeSection />
+    <main className="w-full min-h-screen pb-20">
+      {/* <WelcomeSection /> */}
       <ChartsSection />
     </main>
   );
