@@ -9,10 +9,10 @@ interface UserActionsProps {
 const UserActions: React.FC<UserActionsProps> = ({ onEdit, onDelete }) => {
   return (
     <div className="flex justify-center gap-4">
-      <button onClick={onEdit} className="text-blue-600 hover:text-blue-800 transition" title="Editar Usuário">
+      <button onClick={onEdit} className="text-blue-600 hover:text-blue-800 transition cursor-pointer" title="Editar Usuário">
         <FaEdit />
       </button>
-      <button onClick={onDelete} className="text-red-600 hover:text-red-800 transition" title="Excluir Usuário">
+      <button onClick={onDelete} className="text-red-600 hover:text-red-800 transition cursor-pointer" title="Excluir Usuário">
         <FaTrash />
       </button>
     </div>
