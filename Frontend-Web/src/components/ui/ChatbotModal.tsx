@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid"; // Biblioteca para gerar IDs únicos
+import React, { useState } from "react";
+import { IoSend } from "react-icons/io5";
+import { v4 as uuidv4 } from "uuid";
 
 interface ChatbotModalProps {
   isOpen: boolean;
@@ -12,27 +13,14 @@ interface ChatResponse {
 }
 
 const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
-  const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState("");
   const [responses, setResponses] = useState<ChatResponse[]>([]);
-
-  useEffect(() => {
-    const showElement = () => setIsVisible(true);
-    const hideElement = () => setTimeout(() => setIsVisible(false), 300); // Tempo da animação
-
-    if (isOpen) {
-      showElement();
-    } else {
-      hideElement();
-    }
-  }, [isOpen]);
 
   const handleSendMessage = () => {
     if (message.trim() === "") return;
 
-    // Simulação de resposta do PLN (Substituir pela integração real)
     const botResponse = {
-      id: uuidv4(), // Gera um identificador único
+      id: uuidv4(),
       text: `🤖 Resposta do PLN para: "${message}"`,
     };
 
@@ -40,22 +28,28 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
     setMessage("");
   };
 
-  if (!isVisible) return null;
+  const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0"
+      className={`fixed inset-0 flex items-center justify-end bg-opacity-10 transition-all duration-300 ease-in-out pr-[40px] ${
+        isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       }`}
+      onClick={handleOutsideClick}
     >
       <div
-        className={`bg-white rounded-lg shadow-lg p-6 w-[500px] md:w-[600px] lg:w-[700px] transition-transform transform ${
+        className={`rounded-xl shadow-lg p-10 w-[450px] md:w-[500px] lg:w-[700px] h-[790px] transition-transform duration-300 ease-in-out transform pb-10${
           isOpen ? "scale-100" : "scale-90"
         }`}
+        style={{ backgroundColor: "rgba(230, 230, 230, 0.9)" }}
       >
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Chatbot</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 flex justify-center items-center ">Chatbot</h2>
 
-        <div className="h-60 overflow-y-auto border p-4 rounded bg-gray-100">
+        <div className="h-155 overflow-y-auto border p-4 rounded-t-xl bg-gray-100">
           {responses.length === 0 ? (
             <p className="text-gray-500">Comece a conversar...</p>
           ) : (
@@ -65,28 +59,24 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        <div className="flex mt-4">
+        <div className="flex">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="flex-1 border p-3 rounded-l outline-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSendMessage();
+            }}
+            className="flex-1 border p-3 rounded-bl-xl outline-none"
             placeholder="Digite sua pergunta..."
           />
           <button
             onClick={handleSendMessage}
-            className="bg-blue-600 text-white px-4 py-3 rounded-r hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-3 rounded-br-xl hover:bg-blue-700"
           >
-            Enviar
+            <IoSend className="w-5 h-5" />
           </button>
         </div>
-
-        <button
-          onClick={onClose}
-          className="mt-4 text-red-500 font-semibold hover:text-red-700 transition"
-        >
-          Fechar
-        </button>
       </div>
     </div>
   );
