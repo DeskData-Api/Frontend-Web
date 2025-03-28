@@ -83,8 +83,8 @@ const UserForm: React.FC<UserFormProps> = ({ user, onClose, onSave }) => {
         </div>
 
         <div className="flex justify-between">
-          <button onClick={onClose} className="text-red-500">Cancelar</button>
-          <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <button onClick={onClose} className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-500 cursor-pointer">Cancelar</button>
+          <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
             {user ? "Salvar" : "Criar"}
           </button>
         </div>
