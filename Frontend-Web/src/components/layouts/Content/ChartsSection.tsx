@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ChartCard from "./ChartCard";
 import InfoBlock from "./InfoBlock";
+import LoadingScreen from "../../LoadingScreen";
 
 interface Category {
   name: string;
@@ -8,7 +9,7 @@ interface Category {
 }
 
 interface Elements {
-  categoria:string;
+  categoria: string;
   qtd: number;
 }
 
@@ -54,11 +55,25 @@ const ChartsSection: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="w-full min-h-screen bg-white p-10">Carregando...</div>;
+    return <LoadingScreen />;
   }
 
   if (error || !dashboardData) {
-    return <div className="w-full min-h-screen bg-white p-10">Erro: {error || "Dados não disponíveis"}</div>;
+    return (
+      <div className="flex flex-col items-center justify-center w-full min-h-screen bg-white px-6 text-center">
+        <div className="text-6xl mb-4 text-red-500">⚠️</div>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-2">Algo deu errado</h1>
+        <p className="text-gray-600 mb-4">
+          Não foi possível carregar os dados do dashboard no momento.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    );
   }
 
   return (
