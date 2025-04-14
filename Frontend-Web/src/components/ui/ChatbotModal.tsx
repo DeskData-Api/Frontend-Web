@@ -47,7 +47,7 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
         }`}
         style={{ backgroundColor: "rgba(230, 230, 230, 0.9)" }}
       >
-        <h2 className="text-2xl font-bold mb-4 text-gray-800 flex justify-center items-center ">Chatbot</h2>
+        <h2 className="text-2xl font-bold font-rubik mb-4 text-gray-800 flex justify-center items-center ">Chatbot</h2>
 
         <div className="h-155 overflow-y-auto border p-4 rounded-t-xl bg-gray-100">
           {responses.length === 0 ? (

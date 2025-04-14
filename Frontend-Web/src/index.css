@@ -1,2 +1,16 @@
 @import "tailwindcss";
 
+:root {
+    --font-inter: "Inter", sans-serif;
+    --font-montserrat: 'Montserrat', sans-serif;
+    --font-rubik: 'Rubik', sans-serif;
+}
+
+@layer utilities {
+    .font-montserrat {
+        font-family: var(--font-montserrat);
+    }
+    .font-rubik {
+        font-family: var(--font-rubik);
+    }
+}
