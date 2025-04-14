@@ -3,6 +3,7 @@ import ChartCard from "./ChartCard";
 import InfoBlock from "./InfoBlock";
 import LoadingScreen from "../../LoadingScreen";
 import { mockDashboardData } from "../../../mockData";
+import { formatarMes } from "../../../utils/formatters";
 
 interface Category {
   name: string;
@@ -137,7 +138,10 @@ const ChartsSection: React.FC = () => {
         <ChartCard
           title="Histórico mensal de Chamados"
           type="line"
-          data={dashboardData.chamadosPorMes}
+          data={dashboardData.chamadosPorMes.map(item => ({
+            ...item,
+            name: formatarMes(item.name),
+          }))}
         />
       </div>
     </section>
