@@ -1,90 +1,40 @@
-export const mockDashboardData = {
-    chamados: [
-      {
-        id: 1,
-        titulo: "Erro no sistema de login",
-        entidade: "TI",
-        categoria: "Bug",
-        localizacao: "São Paulo",
-        elementos_associados: ["API Auth", "Banco de Dados"],
-        data_abertura: "2024-03-10",
-        data_fechamento: "2024-03-12",
-        tempo_interno_excedido: false,
-        tempo_resposta: 3,
-        tempo_interno_resposta: 2,
-        descricao: "Usuários não conseguem fazer login no sistema.",
-        plugins: ["OAuth", "JWT"],
-        solucao: "Correção no backend e atualização do token",
-        status: "Fechado",
-        tipo: "Incidente",
-        tecnico_atribuido: "Carlos Silva",
-        fornecedor_atribuido: "Microsoft",
-        ultima_atualizacao: "2024-03-12",
-      },
-      {
-        id: 2,
-        titulo: "Instabilidade no servidor",
-        entidade: "Infraestrutura",
-        categoria: "Falha",
-        localizacao: "Rio de Janeiro",
-        elementos_associados: ["Servidor Apache", "Firewall"],
-        data_abertura: "2024-03-11",
-        data_fechamento: "2024-03-14",
-        tempo_interno_excedido: true,
-        tempo_resposta: 5,
-        tempo_interno_resposta: 4,
-        descricao: "O servidor apresentou lentidão e quedas frequentes.",
-        plugins: ["Docker", "Kubernetes"],
-        solucao: "Reconfiguração e otimização do balanceamento de carga",
-        status: "Fechado",
-        tipo: "Problema",
-        tecnico_atribuido: "Mariana Souza",
-        fornecedor_atribuido: "AWS",
-        ultima_atualizacao: "2024-03-14",
-      },
-    ],
-  
-    chamadosAnalise: {
-      totalChamados: 120,
-      chamadosAbertos: 45,
-      chamadosFechados: 75,
-      mediaTempoResposta: 4.2, // em horas
-      categorias: [
-        { categoria: "Bug", qtd: 35 },
-        { categoria: "Falha", qtd: 25 },
-        { categoria: "Dúvida", qtd: 30 },
-        { categoria: "Melhoria", qtd: 20 },
-        { categoria: "Outro", qtd: 10 },
-      ],
-    },
-  
-    ticketsCSV: [
-      {
-        id_do_item: 101,
-        resumo: "Erro no pagamento via boleto",
-        tipo_do_ticket: "Problema",
-        status: "Aberto",
-        nome_do_projeto: "E-commerce",
-        responsavel: "José Oliveira",
-        criado: "2024-03-08",
-        atualizado: "2024-03-10",
-        resolvido: null,
-        descricao: "Clientes relataram erro ao pagar via boleto bancário.",
-        anexos: ["screenshot1.png", "log_erro.txt"],
-      },
-      {
-        id_do_item: 102,
-        resumo: "Solicitação de novo recurso",
-        tipo_do_ticket: "Melhoria",
-        status: "Fechado",
-        nome_do_projeto: "CRM",
-        responsavel: "Ana Costa",
-        criado: "2024-02-28",
-        atualizado: "2024-03-05",
-        resolvido: "2024-03-05",
-        descricao: "Pedido para adicionar um campo de telefone na tela de contatos.",
-        anexos: ["mockup.png"],
-      },
-    ],
-  };
-  
+import { DashboardData } from "./components/layouts/Content/ChartsSection";
+
+export const mockDashboardData: DashboardData = {
+  total: 120,
+  abertos: 45,
+  fechados: 75,
+  resolvidos: 75, // ou outro número se for diferente de fechados
+  tempoMedio: 4.2,
+
+  top5Categorias: [
+    { name: "Bug", qtd: 35 },
+    { name: "Falha", qtd: 25 },
+    { name: "Dúvida", qtd: 30 },
+    { name: "Melhoria", qtd: 20 },
+    { name: "Outro", qtd: 10 },
+  ],
+
+  top5Elementos: [
+    { categoria: "API Auth", qtd: 10 },
+    { categoria: "Banco de Dados", qtd: 8 },
+    { categoria: "Servidor Apache", qtd: 6 },
+    { categoria: "Firewall", qtd: 5 },
+    { categoria: "OAuth", qtd: 3 },
+  ],
+
+  chamadosPorMes: [
+    { name: "2024-01", qtd: 10 },
+    { name: "2024-02", qtd: 15 },
+    { name: "2024-03", qtd: 20 },
+    { name: "2024-04", qtd: 25 },
+  ],
+
+  colaboradores: [
+    { name: "Carlos Silva", qtd: 40 },
+    { name: "Mariana Souza", qtd: 35 },
+    { name: "José Oliveira", qtd: 25 },
+    { name: "Ana Costa", qtd: 20 },
+    { name: "Lucas Lima", qtd: 10 },
+  ],
+};

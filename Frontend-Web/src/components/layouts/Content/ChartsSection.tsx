@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import ChartCard from "./ChartCard";
 import InfoBlock from "./InfoBlock";
 import LoadingScreen from "../../LoadingScreen";
+import { mockDashboardData } from "../../../mockData";
+import { formatarMes } from "../../../utils/formatters";
 
 interface Category {
   name: string;
@@ -18,14 +20,14 @@ interface ChamadosPorMes {
   qtd: number;
 }
 
-interface DashboardData {
+export interface DashboardData {
   total: number;
   abertos: number;
   fechados: number;
   resolvidos: number;
   top5Categorias: Category[];
   top5Elementos: Elements[];
-  chamadosPorMes: ChamadosPorMes[]; // Adicionado
+  chamadosPorMes: ChamadosPorMes[];
   tempoMedio?: number;
   colaboradores: Category[];
 }
@@ -38,15 +40,23 @@ const ChartsSection: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch("http://localhost:3003/chamados/dashboard");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/chamados/dashboard`);
         if (!response.ok) {
           throw new Error("Erro ao buscar dados do dashboard");
         }
         const data: DashboardData = await response.json();
         setDashboardData(data);
-        setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido");
+        const msg = err instanceof Error ? err.message : "Erro desconhecido";
+        console.error("Erro ao buscar dados do dashboard:", msg);
+        setError(msg);
+
+        // ✅ Fallback para mock em modo desenvolvimento (Vite)
+        if (import.meta.env.DEV) {
+          console.warn("Usando dados mockados em modo desenvolvimento.");
+          setDashboardData(mockDashboardData);
+        }
+      } finally {
         setLoading(false);
       }
     };
@@ -54,11 +64,9 @@ const ChartsSection: React.FC = () => {
     fetchDashboardData();
   }, []);
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  if (loading) return <LoadingScreen />;
 
-  if (error || !dashboardData) {
+  if (error && !dashboardData && !import.meta.env.DEV) {
     return (
       <div className="flex flex-col items-center justify-center w-full min-h-screen bg-white px-6 text-center">
         <div className="text-6xl mb-4 text-red-500">⚠️</div>
@@ -78,6 +86,12 @@ const ChartsSection: React.FC = () => {
 
   return (
     <section className="w-full min-h-screen bg-white p-10">
+      {import.meta.env.DEV && error && (
+        <div className="mb-4 text-sm text-yellow-600 font-medium">
+          ⚠️ Modo desenvolvimento: dados mockados em uso
+        </div>
+      )}
+
       {/* Blocos de Indicadores */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <InfoBlock title="Total de Chamados" value={dashboardData.total} unit="chamados" />
@@ -92,11 +106,7 @@ const ChartsSection: React.FC = () => {
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ChartCard
-          title="Elementos de Chamados"
-          type="pie"
-          data={dashboardData.top5Elementos}
-        />
+        <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
         <ChartCard
           title="Chamados por Status"
           type="bar"
@@ -128,7 +138,10 @@ const ChartsSection: React.FC = () => {
         <ChartCard
           title="Histórico mensal de Chamados"
           type="line"
-          data={dashboardData.chamadosPorMes}
+          data={dashboardData.chamadosPorMes.map(item => ({
+            ...item,
+            name: formatarMes(item.name),
+          }))}
         />
       </div>
     </section>
