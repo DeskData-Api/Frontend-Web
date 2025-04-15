@@ -5,7 +5,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: "Admin" | "Viewer";
+  role: "Administrador" | "Monitor";
 }
 
 interface UsersTableProps {
@@ -22,7 +22,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onEdit, onDelete }) => {
           <tr className="bg-gray-200">
             <th className="p-3 text-left">Nome</th>
             <th className="p-3 text-left">E-mail</th>
-            <th className="p-3 text-left">Tipo</th>
+            <th className="p-3 text-left">Cargo</th>
             <th className="p-3 text-center">Ações</th>
           </tr>
         </thead>
