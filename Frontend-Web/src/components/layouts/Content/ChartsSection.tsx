@@ -88,7 +88,7 @@ const ChartsSection: React.FC = () => {
   }
 
   return (
-    <section className="w-full min-h-screen bg-white p-10">
+    <section className="w-full min-h-screen bg-white p-20">
       {import.meta.env.DEV && error && (
         <div className="mb-4 text-sm text-yellow-600 font-medium">
           ⚠️ Modo desenvolvimento: dados mockados em uso
@@ -124,6 +124,12 @@ const ChartsSection: React.FC = () => {
         {/* Gráfico: Elementos */}
         <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
 
+        <ChartCard
+          title="Similaridade entre Chamados"
+          type="heatmap"
+          data={dashboardData.similaridadeChamados}
+        />
+
         {/* Gráfico: Status */}
         <ChartCard
           title="Chamados por Status"
@@ -134,11 +140,11 @@ const ChartsSection: React.FC = () => {
           ]}
         />
 
-        {/* Gráfico: Categorias */}
+        {/* Gráfico 5: Boxplot de Tempo por Categoria */}
         <ChartCard
-          title="Categorias com maior incidência"
-          type="bar"
-          data={dashboardData.top5Categorias}
+          title="Tempo Médio por Categoria"
+          type="boxplot"
+          data={dashboardData.tempoPorCategoria}
         />
 
         <ChartCard
@@ -147,19 +153,13 @@ const ChartsSection: React.FC = () => {
           data={dashboardData.palavrasFrequentes}
         />
 
-        {/* Gráfico 5: Boxplot de Tempo por Categoria */}
-        {/* <ChartCard
-          title="Boxplot: Tempo Médio por Categoria"
-          type="boxplot"
-          data={dashboardData.tempoPorCategoria}
-        /> */}
-
-        {/* Gráfico 8: Similaridade entre Chamados (Heatmap) */}
-        {/* <ChartCard
-          title="Similaridade entre Chamados (Heatmap)"
-          type="heatmap"
-          data={dashboardData.similaridadeChamados}
-        /> */}
+        <div className="lg:col-span-2 col-span-1">
+          <ChartCard
+            title="Categorias com maior incidência"
+            type="bar"
+            data={dashboardData.top5Categorias}
+          />
+        </div>
 
       </div>
     </section>
