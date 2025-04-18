@@ -30,6 +30,9 @@ export interface DashboardData {
   chamadosPorMes: ChamadosPorMes[];
   tempoMedio?: number;
   colaboradores: Category[];
+  palavrasFrequentes: Category[];
+  tempoPorCategoria: Category[];
+  similaridadeChamados: Category[];
 }
 
 const ChartsSection: React.FC = () => {
@@ -106,7 +109,22 @@ const ChartsSection: React.FC = () => {
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Histórico mensal de Chamados em destaque */}
+        <div className="lg:col-span-2 col-span-1">
+          <ChartCard
+            title="Histórico mensal de Chamados"
+            type="line"
+            data={dashboardData.chamadosPorMes.map(item => ({
+              ...item,
+              name: formatarMes(item.name),
+            }))}
+          />
+        </div>
+
+        {/* Gráfico: Elementos */}
         <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
+
+        {/* Gráfico: Status */}
         <ChartCard
           title="Chamados por Status"
           type="bar"
@@ -115,34 +133,34 @@ const ChartsSection: React.FC = () => {
             { name: "Fechados", qtd: dashboardData.fechados },
           ]}
         />
-        <ChartCard
-          title="Tempo Médio de Resolução"
-          type="bar"
-          data={[
-            {
-              name: "Média (h)",
-              qtd: dashboardData.tempoMedio !== undefined ? dashboardData.tempoMedio : 0,
-            },
-          ]}
-        />
+
+        {/* Gráfico: Categorias */}
         <ChartCard
           title="Categorias com maior incidência"
           type="bar"
           data={dashboardData.top5Categorias}
         />
+
         <ChartCard
-          title="Chamados por Técnico"
-          type="bar"
-          data={dashboardData.colaboradores}
+          title="Nuvem de Palavras Frequentes"
+          type="wordcloud"
+          data={dashboardData.palavrasFrequentes}
         />
-        <ChartCard
-          title="Histórico mensal de Chamados"
-          type="line"
-          data={dashboardData.chamadosPorMes.map(item => ({
-            ...item,
-            name: formatarMes(item.name),
-          }))}
-        />
+
+        {/* Gráfico 5: Boxplot de Tempo por Categoria */}
+        {/* <ChartCard
+          title="Boxplot: Tempo Médio por Categoria"
+          type="boxplot"
+          data={dashboardData.tempoPorCategoria}
+        /> */}
+
+        {/* Gráfico 8: Similaridade entre Chamados (Heatmap) */}
+        {/* <ChartCard
+          title="Similaridade entre Chamados (Heatmap)"
+          type="heatmap"
+          data={dashboardData.similaridadeChamados}
+        /> */}
+
       </div>
     </section>
   );

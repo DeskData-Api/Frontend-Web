@@ -1,26 +1,24 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
+import WordCloudSafe from "./WordCloudSafe";
 
 interface ChartCardProps {
   title: string;
-  type: "bar" | "line" | "pie";
+  type: "bar" | "line" | "pie" | "wordcloud" | "boxplot" | "heatmap";
   data: { name?: string; categoria?: string; qtd: number }[];
 }
 
 const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
-  // Gera rótulos seguros
   const categories = data.map((d, i) => d.name ?? d.categoria ?? `Item ${i + 1}`);
   const values = data.map((d) => Number(d.qtd ?? 0));
 
-  // Series específicas por tipo
   const chartSeries =
     type === "pie"
       ? values
       : [{ name: title, data: values }];
 
-  // Configurações específicas por tipo
-  let chartOptions: ApexOptions;
+  let chartOptions: ApexOptions = { chart: { type } };
 
   if (type === "pie") {
     chartOptions = {
@@ -68,13 +66,20 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
         },
       },
     };
-  } else {
-    // fallback para evitar erro em tipo inválido
-    chartOptions = { chart: { type } };
   }
 
+  if (type === "wordcloud") {
+    return (
+      <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col">
+        <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
+        <WordCloudSafe data={data as any} />
+      </div>
+    );
+  }
+
+  // Gráficos padrão com ApexChart
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 flex flex-col">
+    <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col">
       <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
       <ReactApexChart
         options={chartOptions}
