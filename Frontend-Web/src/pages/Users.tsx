@@ -12,14 +12,14 @@ interface User {
     id: number;
     name: string;
     email: string;
-    role: "Admin" | "Viewer";
+    role: "Administrador" | "Monitor";
 }
 
 // Mock inicial de usuários
 const initialUsers: User[] = [
-    { id: 1, name: "João Silva", email: "joao@email.com", role: "Admin" },
-    { id: 2, name: "Maria Oliveira", email: "maria@email.com", role: "Viewer" },
-    { id: 3, name: "Carlos Souza", email: "carlos@email.com", role: "Admin" },
+    { id: 1, name: "João Silva", email: "joao@email.com", role: "Administrador" },
+    { id: 2, name: "Maria Oliveira", email: "maria@email.com", role: "Monitor" },
+    { id: 3, name: "Carlos Souza", email: "carlos@email.com", role: "Administrador" },
 ];
 
 const Users: React.FC = () => {

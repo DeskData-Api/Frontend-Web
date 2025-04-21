@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ChartCard from "./ChartCard";
 import InfoBlock from "./InfoBlock";
+import ChamadosFechadosIcone from "../../../assets/icons/chamados_fechados.png"
+import ChamadosAbertosIcone from "../../../assets/icons/chamados_abertos.png"
+import Hour_glass from "../../../assets/icons/hour-glass.png"
+import Pie_chart from "../../../assets/icons/pie-chart.png"
 
 interface Category {
   name: string;
@@ -8,7 +12,7 @@ interface Category {
 }
 
 interface Elements {
-  categoria:string;
+  categoria: string;
   qtd: number;
 }
 
@@ -53,6 +57,7 @@ const ChartsSection: React.FC = () => {
     fetchDashboardData();
   }, []);
 
+
   if (loading) {
     return <div className="w-full min-h-screen bg-white p-10">Carregando...</div>;
   }
@@ -61,17 +66,57 @@ const ChartsSection: React.FC = () => {
     return <div className="w-full min-h-screen bg-white p-10">Erro: {error || "Dados não disponíveis"}</div>;
   }
 
+  const TimeFormatFix = (time: number) => {
+    const decimal = time % 1;
+    const minutos = decimal * 60;
+    const Horas = Math.floor(time);
+
+    return {
+      horas: Horas,
+      minutos: Math.round(minutos)
+    };
+
+  }
+
   return (
     <section className="w-full min-h-screen bg-white p-10">
       {/* Blocos de Indicadores */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <InfoBlock title="Total de Chamados" value={dashboardData.total} unit="chamados" />
-        <InfoBlock title="Chamados Abertos" value={dashboardData.abertos} unit="em aberto" />
-        <InfoBlock title="Chamados Fechados" value={dashboardData.fechados} unit="resolvidos" />
+        <InfoBlock 
+          title="Total de Chamados"
+          value={dashboardData.total}
+          unit="chamados" 
+          icon1={Pie_chart}
+          />
+
+        <InfoBlock 
+          title="Chamados Abertos" 
+          value={dashboardData.abertos} 
+          unit="em aberto" 
+          color="#D08700" 
+          icon1={ChamadosAbertosIcone}
+          />
+
         <InfoBlock
-          title="Tempo Médio Resposta"
-          value={dashboardData.tempoMedio !== undefined ? dashboardData.tempoMedio : "N/A"}
-          unit={dashboardData.tempoMedio !== undefined ? "horas" : ""}
+          title="Chamados Fechados"
+          value={dashboardData.fechados !== undefined ? dashboardData.fechados : "N/A"}
+          unit="resolvidos"
+          color="#5EA500"
+          icon2={ChamadosFechadosIcone}
+
+        />
+        <InfoBlock
+          title="Tempo Médio de Resposta"
+          value={
+            dashboardData.tempoMedio !== undefined
+              ? (() => {
+                const { horas, minutos } = TimeFormatFix(dashboardData.tempoMedio);
+                return `${horas}h ${minutos}m`;
+              })()
+              : "N/A"
+          }
+          unit="" // Unidade não é necessária, já que o texto inclui "horas" e "minutos"
+          icon2={Hour_glass}
         />
       </div>
 
