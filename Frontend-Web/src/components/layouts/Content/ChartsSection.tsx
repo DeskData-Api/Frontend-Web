@@ -30,6 +30,9 @@ export interface DashboardData {
   chamadosPorMes: ChamadosPorMes[];
   tempoMedio?: number;
   colaboradores: Category[];
+  palavrasFrequentes: Category[];
+  tempoPorCategoria: Category[];
+  similaridadeChamados: Category[];
 }
 
 const ChartsSection: React.FC = () => {
@@ -85,7 +88,7 @@ const ChartsSection: React.FC = () => {
   }
 
   return (
-    <section className="w-full min-h-screen bg-white p-10">
+    <section className="w-full min-h-screen bg-white p-20">
       {import.meta.env.DEV && error && (
         <div className="mb-4 text-sm text-yellow-600 font-medium">
           ⚠️ Modo desenvolvimento: dados mockados em uso
@@ -106,7 +109,28 @@ const ChartsSection: React.FC = () => {
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Histórico mensal de Chamados em destaque */}
+        <div className="lg:col-span-2 col-span-1">
+          <ChartCard
+            title="Histórico mensal de Chamados"
+            type="line"
+            data={dashboardData.chamadosPorMes.map(item => ({
+              ...item,
+              name: formatarMes(item.name),
+            }))}
+          />
+        </div>
+
+        {/* Gráfico: Elementos */}
         <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
+
+        <ChartCard
+          title="Similaridade entre Chamados"
+          type="heatmap"
+          data={dashboardData.similaridadeChamados}
+        />
+
+        {/* Gráfico: Status */}
         <ChartCard
           title="Chamados por Status"
           type="bar"
@@ -115,34 +139,28 @@ const ChartsSection: React.FC = () => {
             { name: "Fechados", qtd: dashboardData.fechados },
           ]}
         />
+
+        {/* Gráfico 5: Boxplot de Tempo por Categoria */}
         <ChartCard
-          title="Tempo Médio de Resolução"
-          type="bar"
-          data={[
-            {
-              name: "Média (h)",
-              qtd: dashboardData.tempoMedio !== undefined ? dashboardData.tempoMedio : 0,
-            },
-          ]}
+          title="Tempo Médio por Categoria"
+          type="boxplot"
+          data={dashboardData.tempoPorCategoria}
         />
+
         <ChartCard
-          title="Categorias com maior incidência"
-          type="bar"
-          data={dashboardData.top5Categorias}
+          title="Nuvem de Palavras Frequentes"
+          type="wordcloud"
+          data={dashboardData.palavrasFrequentes}
         />
-        <ChartCard
-          title="Chamados por Técnico"
-          type="bar"
-          data={dashboardData.colaboradores}
-        />
-        <ChartCard
-          title="Histórico mensal de Chamados"
-          type="line"
-          data={dashboardData.chamadosPorMes.map(item => ({
-            ...item,
-            name: formatarMes(item.name),
-          }))}
-        />
+
+        <div className="lg:col-span-2 col-span-1">
+          <ChartCard
+            title="Categorias com maior incidência"
+            type="bar"
+            data={dashboardData.top5Categorias}
+          />
+        </div>
+
       </div>
     </section>
   );
