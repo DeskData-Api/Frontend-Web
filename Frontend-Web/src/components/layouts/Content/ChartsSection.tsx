@@ -87,8 +87,10 @@ const ChartsSection: React.FC = () => {
     );
   }
 
+  if (!dashboardData) return null;
+
   return (
-    <section className="w-full min-h-screen bg-white p-20">
+    <section className="w-full min-h-screen bg-white p-10">
       {import.meta.env.DEV && error && (
         <div className="mb-4 text-sm text-yellow-600 font-medium">
           ⚠️ Modo desenvolvimento: dados mockados em uso
@@ -102,7 +104,7 @@ const ChartsSection: React.FC = () => {
         <InfoBlock title="Chamados Fechados" value={dashboardData.fechados} unit="resolvidos" />
         <InfoBlock
           title="Tempo Médio Resposta"
-          value={dashboardData.tempoMedio !== undefined ? dashboardData.tempoMedio : "N/A"}
+          value={dashboardData.tempoMedio ?? "N/A"}
           unit={dashboardData.tempoMedio !== undefined ? "horas" : ""}
         />
       </div>
@@ -121,15 +123,6 @@ const ChartsSection: React.FC = () => {
           />
         </div>
 
-        {/* Gráfico: Elementos */}
-        <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
-
-        <ChartCard
-          title="Similaridade entre Chamados"
-          type="heatmap"
-          data={dashboardData.similaridadeChamados}
-        />
-
         {/* Gráfico: Status */}
         <ChartCard
           title="Chamados por Status"
@@ -140,18 +133,18 @@ const ChartsSection: React.FC = () => {
           ]}
         />
 
-        {/* Gráfico 5: Boxplot de Tempo por Categoria */}
+        {/* Gráfico: Elementos */}
+        <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
+
+        <div className="lg:col-span-2 col-span-1">
         <ChartCard
           title="Tempo Médio por Categoria"
           type="boxplot"
           data={dashboardData.tempoPorCategoria}
         />
+        </div>
 
-        <ChartCard
-          title="Nuvem de Palavras Frequentes"
-          type="wordcloud"
-          data={dashboardData.palavrasFrequentes}
-        />
+        {/* Gráfico: Colaboradores */}
 
         <div className="lg:col-span-2 col-span-1">
           <ChartCard
@@ -161,6 +154,17 @@ const ChartsSection: React.FC = () => {
           />
         </div>
 
+        {/* <ChartCard
+          title="Nuvem de Palavras Frequentes"
+          type="wordcloud"
+          data={dashboardData.palavrasFrequentes}
+        /> */}
+
+        <ChartCard
+          title="Similaridade entre Chamados"
+          type="heatmap"
+          data={dashboardData.similaridadeChamados}
+        />
       </div>
     </section>
   );
