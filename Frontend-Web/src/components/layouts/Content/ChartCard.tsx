@@ -3,9 +3,12 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import WordCloudSafe from "./WordCloudSafe";
 
+type ApexChartTypes = "bar" | "line" | "pie" | "heatmap" | "boxPlot";
+type CustomChartTypes = "wordcloud" | "boxplot";
+
 interface ChartCardProps {
   title: string;
-  type: "bar" | "line" | "pie" | "wordcloud" | "boxplot" | "heatmap";
+  type: ApexChartTypes | CustomChartTypes;
   data: { name?: string; categoria?: string; qtd: number }[];
 }
 
@@ -25,12 +28,13 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
       ? values
       : [{ name: title, data: values }];
 
-  let chartOptions: ApexOptions = { chart: { type } };
+  let chartOptions: ApexOptions = { chart: { type: type as ApexChart["type"] } };
 
   if (type === "pie") {
     chartOptions = {
       chart: {
         type: "pie",
+        height: 320,
         fontFamily: "Poppins, sans-serif",
         toolbar: { show: true },
       },
@@ -42,6 +46,12 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
           fontSize: "13px",
         },
       },
+      legend: {
+        position: "bottom",
+        fontFamily: "Poppins, sans-serif",
+        fontSize: "14px",
+        horizontalAlign: "center",
+      }
     };
   } else if (type === "bar" || type === "line") {
     chartOptions = {
@@ -52,7 +62,7 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
       },
       plotOptions: {
         bar: {
-          distributed: type === "bar", // 🎯 ativado só para bar
+          distributed: type === "bar",
         },
       },
       colors: colorByTitle[title] ?? customColors,
@@ -80,7 +90,7 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
         },
       },
     };
-  }  
+  }
 
   if (type === "wordcloud") {
     return (
@@ -150,11 +160,24 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
         style: {
           fontFamily: "Poppins, sans-serif",
         },
+        custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+          const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex].y;
+          return `
+            <div style="padding:8px">
+              <strong>${w.globals.initialSeries[seriesIndex].data[dataPointIndex].x}</strong><br/>
+              Mínimo: ${data[0]}<br/>
+              1º Quartil: ${data[1]}<br/>
+              Mediana: ${data[2]}<br/>
+              3º Quartil: ${data[3]}<br/>
+              Máximo: ${data[4]}
+            </div>
+          `;
+        }
       },
     };
 
     return (
-      <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col">
+      <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col h-[350px]">
         <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
         <ReactApexChart
           options={chartOptions}
@@ -207,7 +230,7 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
     };
 
     return (
-      <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col">
+      <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col h-[350px]">
         <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
         <ReactApexChart
           options={chartOptions}
@@ -221,7 +244,7 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
 
   // Gráficos padrão com ApexChart
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col">
+    <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col h-[350px]">
       <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
       <ReactApexChart
         options={chartOptions}

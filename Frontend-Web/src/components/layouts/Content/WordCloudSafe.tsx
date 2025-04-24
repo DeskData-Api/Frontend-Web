@@ -25,7 +25,7 @@ const WordCloudCanvas: React.FC<WordCloudCanvasProps> = ({ data }) => {
   }, [data]);
 
   return (
-    <div className="bg-gray-100 rounded-lg p-4 flex flex-col">
+    <div className="bg-gray-100 rounded-lg p-4 flex flex-col h-[350px]">
       <canvas ref={canvasRef} width={500} height={250} />
     </div>
   );

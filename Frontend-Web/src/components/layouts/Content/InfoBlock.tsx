@@ -2,7 +2,7 @@ import React from "react";
 
 interface InfoBlockProps {
   title: string;
-  value: number;
+  value: number | string;
   unit: string;
 }
 
