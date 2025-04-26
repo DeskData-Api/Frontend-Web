@@ -94,12 +94,13 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
 
   if (type === "wordcloud") {
     return (
-      <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col">
+      <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col h-[350px]">
         <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
         <WordCloudSafe data={data as any} />
       </div>
     );
-  }
+  }  
+  
 
   if (type === "boxplot") {
     const agrupado: { [key: string]: number[] } = {};
