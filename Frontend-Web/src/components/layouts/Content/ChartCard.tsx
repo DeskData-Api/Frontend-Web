@@ -10,6 +10,7 @@ interface ChartCardProps {
   title: string;
   type: ApexChartTypes | CustomChartTypes;
   data: { name?: string; categoria?: string; qtd: number }[];
+  showXAxisLabels?: boolean; // ← nova prop opcional
 }
 
 const customColors = ["#0070f3", "#00bfa5", "#ffb400", "#ff6f61", "#7f00ff"];
@@ -19,7 +20,7 @@ const colorByTitle: Record<string, string[]> = {
   // outros títulos, se quiser customizar depois
 };
 
-const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
+const ChartCard: React.FC<ChartCardProps> = ({ title, type, data, showXAxisLabels = true }) => {
   const categories = data.map((d, i) => d.name ?? d.categoria ?? `Item ${i + 1}`);
   const values = data.map((d) => Number(d.qtd ?? 0));
 
@@ -69,6 +70,7 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
       xaxis: {
         categories,
         labels: {
+          show: showXAxisLabels ?? true, // ← exibe por padrão, oculta se false
           style: {
             fontFamily: "Poppins, sans-serif",
             fontSize: "12px",
@@ -88,9 +90,18 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data }) => {
           fontFamily: "Poppins, sans-serif",
           fontSize: "13px",
         },
-      },
+        y: {
+          formatter: (val: number, opts: any) => {
+            const categoria = Array.isArray(data) ? data[opts.dataPointIndex]?.categoria ?? '' : '';
+            return categoria
+              ? `${val} ocorrências (${categoria})`
+              : `${val} ocorrências`;
+          }
+        }
+      }
     };
   }
+  
 
   if (type === "wordcloud") {
     return (

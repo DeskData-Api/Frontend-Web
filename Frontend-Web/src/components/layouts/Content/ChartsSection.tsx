@@ -25,7 +25,8 @@ interface mes {
   name: string; // Ex: "2023-09"
   qtd: number;
   categoria: string;
-  semana: string; // Ex: "2023-09-01"
+  quinzena: string; // Ex: "2023-09-01"
+  ordem: string; // Ex: "2023-09-01"
 }
 
 export interface DashboardData {
@@ -42,8 +43,8 @@ export interface DashboardData {
   chm: {
     id: number;
     frequentes_problema: Category[];
+    distribuicao_temporal: mes[];
   }[];
-  topCategoriaPorSemana: mes[]
 }
 
 const ChartsSection: React.FC = () => {
@@ -101,8 +102,16 @@ const ChartsSection: React.FC = () => {
   if (!dashboardData) return null;
 
   const palavrasFrequentes = dashboardData.chm?.[0]?.frequentes_problema || [];
-
-  console.log("Palavras frequentes:", palavrasFrequentes);
+  const distribuicao_temporal = dashboardData?.chm?.[0]?.distribuicao_temporal;
+  
+  let dadosOrdenados: { name: string; qtd: number; categoria: string; ordem?: string }[] = [];
+  
+  if (Array.isArray(distribuicao_temporal)) {
+    dadosOrdenados = [...distribuicao_temporal].sort((a, b) =>
+      new Date(a.ordem).getTime() - new Date(b.ordem).getTime()
+    );
+  }
+  console.log(dadosOrdenados)
   return (
     <section className="w-full min-h-screen bg-white p-10">
       {import.meta.env.DEV && error && (
@@ -132,8 +141,9 @@ const ChartsSection: React.FC = () => {
         {/* Histórico mensal de Chamados em destaque */}
         <div className="lg:col-span-2 col-span-1">
           <ChartCard
-            title="Histórico mensal de Chamados"
+            title="Histórico Mensal de Chamados"
             type="line"
+            showXAxisLabels={true}
             data={dashboardData.chamadosPorMes.map(item => ({
               ...item,
               name: formatarMes(item.name),
@@ -141,32 +151,29 @@ const ChartsSection: React.FC = () => {
           />
         </div>
 
-          {/* Histórico mensal de Chamados em destaque */}
+        <ChartCard
+          title="Nuvem de Palavras Frequentes"
+          type="wordcloud"
+          data={palavrasFrequentes}
+        />
+        {distribuicao_temporal && (
           <div className="lg:col-span-2 col-span-1">
             <ChartCard
-              title="Histórico mensal de Chamados e Categoria mais Citada"
+              title="Categoria Mais Citada por Quinzena"
               type="line"
-              data={dashboardData.chamadosPorMes.map(item => ({
-                ...item,
-                name: formatarMes(item.name),
+              showXAxisLabels={false}
+              data={dadosOrdenados.map(item=> ({
+                name: item.quinzena,     // o que será exibido no eixo X
+                qtd: item.qtd,
+                categoria: item.categoria
               }))}
             />
           </div>
+        )}
 
-          {/* Gráfico: Status */}
-          <ChartCard
-            title="Chamados por Status"
-            type="bar"
-            data={[
-              { name: "Abertos", qtd: dashboardData.abertos },
-              { name: "Fechados", qtd: dashboardData.fechados },
-            ]}
-          />
+        <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
 
-          {/* Gráfico: Elementos */}
-          <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
-
-            {/* <div className="lg:col-span-2 col-span-1">
+        {/* <div className="lg:col-span-2 col-span-1">
           <ChartCard
             title="Tempo Médio por Categoria"
             type="boxplot"
@@ -174,26 +181,20 @@ const ChartsSection: React.FC = () => {
           />
           </div> */}
 
-          <div className="lg:col-span-2 col-span-1">
-            <ChartCard
-              title="Categorias com maior incidência"
-              type="bar"
-              data={dashboardData.top5Categorias}
-            />
-          </div>
-
+        <div className="lg:col-span-2 col-span-1">
           <ChartCard
-            title="Nuvem de Palavras Frequentes"
-            type="wordcloud"
-            data={palavrasFrequentes}
-          />
-
-          <ChartCard
-            title="Similaridade entre Chamados"
-            type="heatmap"
-            data={dashboardData.similaridadeChamados}
+            title="Categorias com maior incidência"
+            type="bar"
+            data={dashboardData.top5Categorias}
           />
         </div>
+
+        <ChartCard
+          title="Similaridade entre Chamados"
+          type="heatmap"
+          data={dashboardData.similaridadeChamados}
+        />
+      </div>
     </section>
   );
 };
