@@ -27,7 +27,7 @@ const Login = () => {
       <img src={LogoIcon} alt="Logo" className="mb-4" style={{ width: "250px", height: "auto" }} />
       <h1 className="text-lg font-semibold mb-4" style={{ color: "#34A9E9", fontSize: 30 }}>DeskData</h1>
       <div className="p-6 bg-white shadow-md rounded-md mt-4">
-        <h2 className="text-lg mb-4">Login</h2>
+        <h2 className="text-lg font-semibold mb-4">Login</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="email"

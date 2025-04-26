@@ -31,7 +31,7 @@ const Header: React.FC = () => {
 
     return (
         <header className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center shadow-md">
-            <div className="flex items-center font-rubik gap-6">
+            <div className="flex items-center gap-6">
                 <Link to="/">
                     <img src={logo} alt="Logo" className="h-10 w-auto" />
                 </Link>
@@ -56,6 +56,16 @@ const Header: React.FC = () => {
                         }`}
                     >
                         Usuários
+                    </Link>
+                    <Link
+                        to="/historico"
+                        className={`relative hover:text-gray-300 transition ${
+                            location.pathname === "/historico"
+                                ? "after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-white"
+                                : ""
+                        }`}
+                    >
+                        Histórico de chamados
                     </Link>
                 </nav>
             </div>
