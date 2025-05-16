@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Login from "./pages/Login";
-import Profile from "./pages/Profile"
 import Historico from "./pages/Historico"
 
 
@@ -13,7 +12,6 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/historico" element={<Historico />} />
       <Route path="/usuarios" element={<Users />} />
-      <Route path="/profile" element={<Profile />} />
     </Routes>
   );
 }

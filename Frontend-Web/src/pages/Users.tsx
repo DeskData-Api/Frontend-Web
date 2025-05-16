@@ -15,17 +15,16 @@ interface User {
     name: string;
     email: string;
     role: "Administrador" | "Monitor";
-  }
-  
-  interface UsersTableProps {
+}
+
+interface UsersTableProps {
     users: User[];
     onEdit: (user?: User | null) => void;
     onDelete: (id: number) => void;
     onSort: (field: keyof User) => void;
     sortField: keyof User | null;
     sortDirection: "asc" | "desc";
-  }
-  
+}
 
 const initialUsers: User[] = [
     { id: 1, name: "João Silva", email: "joao@email.com", role: "Administrador" },
@@ -277,11 +276,10 @@ const Users: React.FC = () => {
                     <button
                         onClick={handlePrevPage}
                         disabled={currentPage === 1}
-                        className={`p-2 rounded ${
-                            currentPage === 1
-                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-600 text-white hover:bg-blue-700"
-                        }`}
+                        className={`p-2 rounded ${currentPage === 1
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                            }`}
                         aria-label="Página anterior"
                     >
                         <FaChevronLeft size={16} />
@@ -290,11 +288,10 @@ const Users: React.FC = () => {
                         <button
                             key={page}
                             onClick={() => handlePageChange(page)}
-                            className={`px-3 py-1 rounded ${
-                                currentPage === page
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                            }`}
+                            className={`px-3 py-1 rounded ${currentPage === page
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                                }`}
                             aria-label={`Página ${page}`}
                         >
                             {page}
@@ -303,11 +300,10 @@ const Users: React.FC = () => {
                     <button
                         onClick={handleNextPage}
                         disabled={currentPage === totalPages}
-                        className={`p-2 rounded ${
-                            currentPage === totalPages
-                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-600 text-white hover:bg-blue-700"
-                        }`}
+                        className={`p-2 rounded ${currentPage === totalPages
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                            }`}
                         aria-label="Próxima página"
                     >
                         <FaChevronRight size={16} />
@@ -325,8 +321,8 @@ const Users: React.FC = () => {
             <Footer />
             <ChatbotButton onClick={() => setChatOpen(true)} />
             <ChatbotModal isOpen={chatOpen} onClose={() => setChatOpen(false)} />
-  );
+        </div>
+    );
 };
-
 
 export default Users;

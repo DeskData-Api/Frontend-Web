@@ -116,7 +116,19 @@ const ChartsSection: React.FC = () => {
       new Date(a.ordem).getTime() - new Date(b.ordem).getTime()
     );
   }
-  console.log(dadosOrdenados)
+
+  const TimeFormatFix = (time: number) => {
+    const decimal = time % 1;
+    const minutos = decimal * 60;
+    const Horas = Math.floor(time);
+
+    return {
+      horas: Horas,
+      minutos: Math.round(minutos)
+    };
+
+  }
+
   return (
     <section className="w-full min-h-screen bg-white p-10">
       {import.meta.env.DEV && error && (
@@ -192,7 +204,7 @@ const ChartsSection: React.FC = () => {
               type="line"
               showXAxisLabels={false}
               data={dadosOrdenados.map(item=> ({
-                name: item.quinzena,     // o que será exibido no eixo X
+                name: item.name,
                 qtd: item.qtd,
                 categoria: item.categoria
               }))}
