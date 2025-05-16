@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ChartCard from "./ChartCard";
 import InfoBlock from "./InfoBlock";
+import ChamadosFechadosIcone from "../../../assets/icons/chamados_fechados.png"
+import ChamadosAbertosIcone from "../../../assets/icons/chamados_abertos.png"
+import Hour_glass from "../../../assets/icons/hour-glass.png"
+import Pie_chart from "../../../assets/icons/pie-chart.png"
 import LoadingScreen from "../../LoadingScreen";
 import { mockDashboardData } from "../../../mockData";
 import { formatarMes } from "../../../utils/formatters";
@@ -35,8 +39,9 @@ export interface DashboardData {
   fechados: number;
   top5Categorias: Category[];
   top5Elementos: Elements[];
-  chamadosPorMes: ChamadosPorMes[];
+  chamadosPorMes: ChamadosPorMes[]; // Adicionado
   tempoMedio?: number;
+  colaboradores: Category[];
   palavrasFrequentes: Category[];
   tempoPorCategoria: Category[];
   similaridadeChamados: Category[];
@@ -55,17 +60,17 @@ const ChartsSection: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/chamados/dashboard`);
+        const response = await fetch("http://localhost:3003/chamados/dashboard");
         if (!response.ok) {
           throw new Error("Erro ao buscar dados do dashboard");
         }
         const data: DashboardData = await response.json();
         setDashboardData(data);
+        setLoading(false);
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Erro desconhecido";
-        console.error("Erro ao buscar dados do dashboard:", msg);
-        setError(msg);
-
+        setError(err instanceof Error ? err.message : "Erro desconhecido");
+        setLoading(false);
+        
         // ✅ Fallback para mock em modo desenvolvimento (Vite)
         if (import.meta.env.DEV) {
           console.warn("Usando dados mockados em modo desenvolvimento.");
@@ -98,7 +103,7 @@ const ChartsSection: React.FC = () => {
       </div>
     );
   }
-
+  
   if (!dashboardData) return null;
 
   const palavrasFrequentes = dashboardData.chm?.[0]?.frequentes_problema || [];
@@ -119,20 +124,44 @@ const ChartsSection: React.FC = () => {
           ⚠️ Modo desenvolvimento: dados mockados em uso
         </div>
       )}
-
+      
       {/* Blocos de Indicadores */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <InfoBlock title="Total de Chamados" value={dashboardData.total} unit="" />
-        <InfoBlock title="Chamados Abertos" value={dashboardData.abertos} unit="" />
-        <InfoBlock title="Chamados Fechados" value={dashboardData.fechados} unit="" />
+        <InfoBlock 
+          title="Total de Chamados"
+          value={dashboardData.total}
+          unit="chamados" 
+          icon1={Pie_chart}
+          />
+
+        <InfoBlock 
+          title="Chamados Abertos" 
+          value={dashboardData.abertos} 
+          unit="em aberto" 
+          color="#D08700" 
+          icon1={ChamadosAbertosIcone}
+          />
+
         <InfoBlock
-          title="Tempo Médio Resposta"
+          title="Chamados Fechados"
+          value={dashboardData.fechados !== undefined ? dashboardData.fechados : "N/A"}
+          unit="resolvidos"
+          color="#5EA500"
+          icon2={ChamadosFechadosIcone}
+
+        />
+        <InfoBlock
+          title="Tempo Médio de Resposta"
           value={
-            dashboardData.tempoMedio !== undefined && dashboardData.tempoMedio !== null
-              ? formatarHorasMinutos(dashboardData.tempoMedio)
+            dashboardData.tempoMedio !== undefined
+              ? (() => {
+                const { horas, minutos } = TimeFormatFix(dashboardData.tempoMedio);
+                return `${horas}h ${minutos}m`;
+              })()
               : "N/A"
           }
-          unit=""
+          unit="" // Unidade não é necessária, já que o texto inclui "horas" e "minutos"
+          icon2={Hour_glass}
         />
       </div>
 

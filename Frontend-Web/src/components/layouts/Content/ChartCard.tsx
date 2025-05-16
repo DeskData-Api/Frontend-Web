@@ -1,7 +1,5 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
-import WordCloudSafe from "./WordCloudSafe";
 
 type ApexChartTypes = "bar" | "line" | "pie" | "heatmap" | "boxPlot";
 type CustomChartTypes = "wordcloud" | "boxplot";
@@ -254,7 +252,6 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data, showXAxisLabel
     );
   }
 
-  // Gráficos padrão com ApexChart
   return (
     <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col h-[350px]">
       <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
