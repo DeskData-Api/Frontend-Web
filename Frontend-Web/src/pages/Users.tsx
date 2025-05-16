@@ -27,8 +27,6 @@ interface User {
   }
   
 
-
-// Mock inicial de usuários
 const initialUsers: User[] = [
     { id: 1, name: "João Silva", email: "joao@email.com", role: "Administrador" },
     { id: 2, name: "Maria Oliveira", email: "maria@email.com", role: "Monitor" },
@@ -327,8 +325,7 @@ const Users: React.FC = () => {
             <Footer />
             <ChatbotButton onClick={() => setChatOpen(true)} />
             <ChatbotModal isOpen={chatOpen} onClose={() => setChatOpen(false)} />
-        </div>
-    );
+  );
 };
 
 

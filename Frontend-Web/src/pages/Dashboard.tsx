@@ -12,13 +12,12 @@ const Dashboard: React.FC = () => {
     <div className="flex h-screen">
       <div className="flex flex-col flex-1">
         <Header />
-        <Content />
+        <main className="flex-grow">
+          <Content />
+        </main>
         <Footer />
 
-        {/* Botão do Chatbot */}
         <ChatbotButton onClick={() => setChatOpen(true)} />
-
-        {/* Modal do Chatbot */}
         <ChatbotModal isOpen={ChatOpen} onClose={() => setChatOpen(false)} />
       </div>
     </div>

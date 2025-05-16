@@ -2,7 +2,7 @@ import React from 'react';
 
 interface InfoBlockProps {
   title: string;
-  value: number;
+  value: number | string;
   unit: string;
   color?: string;
   icon1?: string; // Ícone à esquerda (opcional)

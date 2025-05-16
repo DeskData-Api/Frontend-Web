@@ -14,7 +14,6 @@ function App() {
       <Route path="/historico" element={<Historico />} />
       <Route path="/usuarios" element={<Users />} />
       <Route path="/profile" element={<Profile />} />
-      
     </Routes>
   );
 }
