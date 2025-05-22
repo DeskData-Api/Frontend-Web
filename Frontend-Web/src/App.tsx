@@ -3,6 +3,7 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile"
+import CrudUsuario from "./components/CrudUsuario";
 
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/usuarios" element={<Users />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/crud" element={<CrudUsuario />} />
     </Routes>
   );
 }

@@ -1,8 +1,10 @@
+// Users.tsx
 import React, { useState } from "react";
 import Header from "../components/layouts/Header";
 import Footer from "../components/layouts/Footer";
 import { FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
+import CrudUsuario from "../components/CrudUsuario";
 
 interface User {
   id: number;
@@ -20,6 +22,7 @@ const initialUsers: User[] = [
 const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openCrud, setOpenCrud] = useState(false);
 
   const handleEdit = (user: User) => {
     alert(`Editar usuário: ${user.name}`);
@@ -37,6 +40,10 @@ const Users: React.FC = () => {
       typeof value === "string" && value.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
+
+  const toggleCrud = () => {
+    setOpenCrud(!openCrud);
+  };
 
   const columns = [
     { name: "ID", selector: (row: User) => row.id, sortable: true },
@@ -67,7 +74,11 @@ const Users: React.FC = () => {
   return (
     <div className="flex flex-col h-screen font-montserrat">
       <Header />
-
+      {openCrud && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500/80 bg-opacity-50 z-50">
+          <CrudUsuario onClose={toggleCrud} />
+        </div>
+      )}
       <div className="flex-1 p-6">
         <div className="flex justify-between items-start flex-col sm:flex-row mb-6 gap-4">
           <div>
@@ -80,15 +91,13 @@ const Users: React.FC = () => {
               className="border p-1 rounded w-full md:w-64 font-montserrat"
             />
           </div>
-
           <button
-            onClick={() => alert("Abrir formulário de criação")}
+            onClick={toggleCrud}
             className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-700 cursor-pointer font-montserrat"
           >
             <FaPlus /> Criar Usuário
           </button>
         </div>
-
         <DataTable
           columns={columns}
           data={filteredUsers}
@@ -99,7 +108,6 @@ const Users: React.FC = () => {
           className="rounded border shadow-sm"
         />
       </div>
-
       <Footer />
     </div>
   );
