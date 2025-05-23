@@ -3,6 +3,7 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Login from "./pages/Login";
 import Historico from "./pages/Historico"
+import InputCsv from "./pages/InputCsv";
 
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/historico" element={<Historico />} />
       <Route path="/usuarios" element={<Users />} />
+      <Route path="/inserircsv" element={<InputCsv />} />
     </Routes>
   );
 }
