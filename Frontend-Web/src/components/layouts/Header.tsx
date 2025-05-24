@@ -67,6 +67,16 @@ const Header: React.FC = () => {
                     >
                         Histórico de chamados
                     </Link>
+                    <Link
+                        to="/inserircsv"
+                        className={`relative hover:text-gray-300 transition ${
+                            location.pathname === "/inserircsv"
+                                ? "after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-white"
+                                : ""
+                        }`}
+                    >
+                        Inserir CSV
+                    </Link>
                 </nav>
             </div>
 

@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile"
 import CrudUsuario from "./components/CrudUsuario";
 import Historico from "./pages/Historico"
+import InputCsv from "./pages/InputCsv";
 
 
 function App() {
@@ -14,8 +15,10 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/historico" element={<Historico />} />
       <Route path="/usuarios" element={<Users />} />
+      <Route path="/inserircsv" element={<InputCsv />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/crud" element={<CrudUsuario />} />
+
     </Routes>
   );
 }
