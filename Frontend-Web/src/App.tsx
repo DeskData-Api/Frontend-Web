@@ -4,6 +4,7 @@ import Users from "./pages/Users";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile"
 import CrudUsuario from "./components/CrudUsuario";
+import Historico from "./pages/Historico"
 
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/historico" element={<Historico />} />
       <Route path="/usuarios" element={<Users />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/crud" element={<CrudUsuario />} />

@@ -4,7 +4,6 @@ export const mockDashboardData: DashboardData = {
   total: 120,
   abertos: 45,
   fechados: 75,
-  resolvidos: 75, // ou outro número se for diferente de fechados
   tempoMedio: 4.2,
 
   top5Categorias: [
@@ -78,5 +77,31 @@ export const mockDashboardData: DashboardData = {
     { name: "Erro sistema ≈ Bug funcionalidade", qtd: 85 },
     { name: "Troca de máquina ≈ Instalação software", qtd: 82 },
     { name: "Criação de conta ≈ Novo colaborador", qtd: 79 },
-  ]
+  ],
+
+  chm: [
+    {
+      id: 1,
+      frequentes_problema: [
+        { name: "Falha de autenticação", qtd: 12 },
+        { name: "Erro no sistema", qtd: 8 },
+      ],
+      distribuicao_temporal: [
+        {
+          name: "2024-01",
+          qtd: 5,
+          categoria: "Falha de autenticação",
+          quinzena: "2024-01-01",
+          ordem: "2024-01-01",
+        },
+        {
+          name: "2024-02",
+          qtd: 7,
+          categoria: "Erro no sistema",
+          quinzena: "2024-02-01",
+          ordem: "2024-02-01",
+        },
+      ],
+    },
+  ],
 };

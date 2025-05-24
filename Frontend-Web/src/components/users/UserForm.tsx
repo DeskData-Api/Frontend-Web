@@ -4,7 +4,7 @@ interface User {
   id: number; // Sempre um número
   name: string;
   email: string;
-  role: "Admin" | "Viewer";
+  role: "Administrador" | "Monitor";
 }
 
 interface UserFormProps {
@@ -18,7 +18,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onClose, onSave }) => {
     id: user?.id ?? 0, // ID só será gerado ao salvar
     name: user?.name ?? "",
     email: user?.email ?? "",
-    role: user?.role ?? "Viewer",
+    role: user?.role ?? "Monitor",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -69,7 +69,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onClose, onSave }) => {
 
 
         <div className="mb-4">
-          <label htmlFor="role" className="block text-sm font-semibold">Tipo de Usuário</label>
+          <label htmlFor="role" className="block text-sm font-semibold">Cargo do Usuário</label>
           <select
             name="role"
             id="role"
@@ -77,8 +77,8 @@ const UserForm: React.FC<UserFormProps> = ({ user, onClose, onSave }) => {
             onChange={handleChange}
             className="w-full border p-2 rounded mt-1"
           >
-            <option value="Admin">Admin</option>
-            <option value="Viewer">Viewer</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Monitor">Monitor</option>
           </select>
         </div>
 
