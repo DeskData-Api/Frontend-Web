@@ -263,13 +263,13 @@ const HistoricTable: React.FC = () => {
                 </div>
 
                 {/* Lista de cartões */}
-                <div className="flex flex-wrap gap-8 place-content-center pb-20 pt-5">
-                    {currentItems.map((item) => (
-                        <div key={item.id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-                            <HistoryCard item={item} />
-                        </div>
-                    ))}
-                </div>
+                <div className="flex flex-wrap gap-8 justify-center pb-20 pt-5">
+                {currentItems.map((item) => (
+                    <div key={item.id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center">
+                        <HistoryCard item={item} />
+                    </div>
+                ))}
+            </div>
 
                 {/* Controles de paginação fixos acima do footer */}
                 {totalPages > 1 && (

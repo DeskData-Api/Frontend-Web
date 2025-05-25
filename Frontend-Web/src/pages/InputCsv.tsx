@@ -17,32 +17,35 @@ const InputCsv: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file) {
-      setMessage("Nenhum arquivo selecionado.");
-      return;
+  e.preventDefault();
+
+  if (!file) {
+    setMessage("Nenhum arquivo selecionado.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch("http://localhost:5000/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json(); // <- Adicione isso para interpretar a resposta
+
+    if (response.ok) {
+      setMessage(data.message || "Arquivo enviado com sucesso!");
+      setFile(null);
+    } else {
+      setMessage(data.error || "Erro ao enviar o arquivo.");
     }
-
-    const formData = new FormData();
-    formData.append("csv", file);
-
-    try {
-      const response = await fetch("http://localhost:3001/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        setMessage("Arquivo enviado com sucesso!");
-        setFile(null);
-      } else {
-        setMessage("Erro ao enviar o arquivo.");
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-      setMessage("Erro ao enviar o arquivo.");
-    }
-  };
+  } catch (error) {
+    console.error("Erro:", error);
+    setMessage("Erro ao enviar o arquivo.");
+  }
+};
 
   return (
     <div className="flex flex-col min-h-screen">

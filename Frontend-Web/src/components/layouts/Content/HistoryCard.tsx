@@ -63,6 +63,8 @@ const HistoryCard: React.FC<HistoryCardProps> = ({ item }) => {
                 </div>
             </div>
         </div>
+
+        
     );
 };
 
