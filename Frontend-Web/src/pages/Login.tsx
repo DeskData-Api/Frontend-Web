@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import LogoIcon from "../assets/images/LogoAPI.png";
 import TelaFundoDireito from '../assets/images/TelaFundoDireito.png';
 
@@ -8,18 +8,16 @@ const Login = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
+    login(email, password);
     // Verifica se os dados correspondem a "admin"
-    if (email === "admin@gmail.com" && password === "admin") {
-      navigate("/dashboard");
-    } else {
-      login(email, password);
-      alert("Credenciais inválidas!");
-    }
+    // if (email === "admin@gmail.com" && password === "admin") {
+    //   navigate("/dashboard");
+    // } else {
+    // }
   };
 
   return (

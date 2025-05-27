@@ -17,8 +17,8 @@ const Dashboard: React.FC = () => {
         </main>
         <Footer />
 
-        <ChatbotButton onClick={() => setChatOpen(true)} />
-        <ChatbotModal isOpen={ChatOpen} onClose={() => setChatOpen(false)} />
+        {/* <ChatbotButton onClick={() => setChatOpen(true)} />
+        <ChatbotModal isOpen={ChatOpen} onClose={() => setChatOpen(false)} /> */}
       </div>
     </div>
   );

@@ -14,26 +14,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<{ role: string } | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      axios
-        .get("http://localhost:5000/me") // Backend precisa dessa rota
-        .then((response) => setUser(response.data))
-        .catch(() => logout());
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  //     axios
+  //       .get("http://localhost:5000/me") // Backend precisa dessa rota
+  //       .then((response) => setUser(response.data))
+  //       .catch(() => logout());
+  //   }
+  // }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, senha: string) => {
     try {
-      const response = await axios.post("http://localhost:5000/login", { email, password });
+      const response = await axios.post("http://localhost:3003/login", { email, senha });
       const { token, role } = response.data;
 
       localStorage.setItem("token", token);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      setUser({ role });
+      // setUser({ role });
       navigate("/dashboard");
     } catch (error) {
       alert("Falha na autenticação!");

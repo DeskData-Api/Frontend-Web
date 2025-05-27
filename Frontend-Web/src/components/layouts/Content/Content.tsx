@@ -1,5 +1,4 @@
 import React from "react";
-import WelcomeSection from "./WelcomeSection";
 import ChartsSection from "./ChartsSection";
 
 const Content: React.FC = () => {

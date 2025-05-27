@@ -1,55 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { BiUserPlus } from 'react-icons/bi';
 import UserIcon from '../assets/images/User-icon.png';
 import AdminIcon from '../assets/images/Admin-icon.png';
-import CrudUsuarioPop from './CrudPopUp';
+import axios from "axios";
 
 interface CrudUsuarioProps {
   onClose: () => void;
+  userToEdit?: {
+    id: number;
+    nome: string;
+    email: string;
+    cargo: "Administrativo" | "Visualizador";
+  };
 }
 
-const CrudUsuario: React.FC<CrudUsuarioProps> = ({ onClose }) => {
+const CrudUsuario: React.FC<CrudUsuarioProps> = ({ onClose, userToEdit }) => {
   const [nome, setNome] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [cpf, setCpf] = useState('');
   const [cargo, setCargo] = useState('');
   const [email, setEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  
   const [errors, setErrors] = useState<{
     nome?: string;
     email?: string;
-    cpf?: string;
     cargo?: string;
     senha?: string;
     confirmarSenha?: string;
   }>({});
 
-  const formatCpf = (value: string) => {
-    const digits = value.replace(/\D/g, '');
-    return digits
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
-      .slice(0, 14);
-  };
-
-  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedCpf = formatCpf(e.target.value);
-    setCpf(formattedCpf);
-    if (formattedCpf.length === 14) {
-      setErrors((prev) => ({ ...prev, cpf: undefined }));
-    }
-  };
-
   const validateForm = () => {
     const newErrors: {
       nome?: string;
       email?: string;
-      cpf?: string;
       cargo?: string;
       senha?: string;
       confirmarSenha?: string;
@@ -61,9 +47,7 @@ const CrudUsuario: React.FC<CrudUsuarioProps> = ({ onClose }) => {
     } else if (!email.includes('@') || !email.endsWith('.com')) {
       newErrors.email = 'Email deve conter @ e terminar com .com';
     }
-    if (!cpf || cpf.length !== 14) newErrors.cpf = 'CPF inválido.';
     if (!cargo) newErrors.cargo = 'Cargo é obrigatório.';
-    if (senha.length < 6) newErrors.senha = 'Senha deve ter pelo menos 6 caracteres.';
     if (senha !== confirmarSenha) newErrors.confirmarSenha = 'Senhas não coincidem.';
 
     return newErrors;
@@ -83,7 +67,6 @@ const CrudUsuario: React.FC<CrudUsuarioProps> = ({ onClose }) => {
         break;
       case 'senha':
         setSenha(value);
-        if (value.length >= 6) setErrors((prev) => ({ ...prev, senha: undefined }));
         if (value === confirmarSenha) setErrors((prev) => ({ ...prev, confirmarSenha: undefined }));
         break;
       case 'confirmarSenha':
@@ -97,194 +80,169 @@ const CrudUsuario: React.FC<CrudUsuarioProps> = ({ onClose }) => {
     }
   };
 
-  const handleCreate = () => {
+  useEffect(() => {
+    if (userToEdit) {
+      setNome(userToEdit.nome ?? '');
+      setEmail(userToEdit.email ?? '');
+      setCargo(userToEdit.cargo ?? 'Visualizador');
+      // Não preenche senha por segurança
+    }
+  }, [userToEdit]);
+
+  const handleSubmit = async () => {
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    setErrors({});
-    setShowPopup(true);
+
+    const payload = {
+      nome,
+      email,
+      senha,
+      cargo,
+      confirmarSenha,
+    };
+
+    try {
+      if (userToEdit) {
+        await axios.put(`http://localhost:3003/usuario/atualizar/${userToEdit.id}`, payload);
+      } else {
+        await axios.post("http://localhost:3003/usuario/criar", payload);
+      }
+
+      onClose(); // fecha o popup imediatamente após sucesso
+      window.location.reload(); // recarrega a página para refletir as mudanças
+    } catch (error) {
+      console.error("Erro ao salvar usuário:", error);
+    }
   };
 
-  const handleClosePopup = () => {
-    setShowPopup(false);
-    setNome('');
-    setSenha('');
-    setConfirmarSenha('');
-    setCpf('');
-    setCargo('');
-    setEmail('');
-    setErrors({});
-  };
-
-  const iconSrc = cargo === 'desenvolvedor' ? AdminIcon : UserIcon;
+  const iconSrc = cargo === 'Administrador' ? AdminIcon : UserIcon;
 
   return (
-    <div className="min-h-screen flex items-center justify-center absolute z-10">
-      <button
-        onClick={onClose}
-        className="w-6 h-6 flex items-center justify-center absolute z-20 top-60 left-237 text-xl cursor-pointer hover:bg-gray-200 rounded-l"
-      >
-        x
-      </button>
-      <div className="relative w-252 min-h-128 bg-white shadow-lg rounded-xl p-6 animate-popup">
-        {showPopup && (
-          <CrudUsuarioPop
-            userData={{ nome, email, cargo }}
-            onClose={handleClosePopup}
-            onCloseParent={onClose}
-          />
-        )}
-        <div className="flex flex-row">
-          <img
-            src={iconSrc}
-            alt={cargo === 'desenvolvedor' ? 'Admin Icon' : 'User Icon'}
-            className="w-60 h-60 object-contain m-10"
-          />
-          <div className="flex flex-col pt-12">
-            <div className="w-full">
-              <label className="block text-gray-700 text-sm font-semibold mb-1 text-xl">Nome:</label>
-              <div className="w-160 relative overflow-visible">
-                <input
-                  type="text"
-                  placeholder="Adicione um nome completo"
-                  value={nome}
-                  onChange={(e) => handleInputChange('nome', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.nome ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-2`}
-                />
-                {errors.nome && (
-                  <p className="absolute text-red-500 text-sm right-4 bottom-[-1.25rem] text-left">{errors.nome}</p>
-                )}
-              </div>
-            </div>
-            <div className="w-full pt-3">
-              <label className="block text-gray-700 text-sm font-semibold mb-1 text-xl">Senha:</label>
-              <div className="w-160 relative overflow-visible">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Insira uma senha"
-                  value={senha}
-                  onChange={(e) => handleInputChange('senha', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.senha ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-2`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-5 top-2.75 text-gray-600 hover:text-gray-800 transition cursor-pointer"
-                >
-                  {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-                </button>
-                {errors.senha && (
-                  <p className="absolute text-red-500 text-sm right-4 bottom-[-1.25rem] text-left">{errors.senha}</p>
-                )}
-              </div>
-            </div>
-            <div className="w-full pt-3">
-              <label className="block text-gray-700 text-sm font-semibold mb-1 text-xl">Confirmar Senha:</label>
-              <div className="w-160 relative overflow-visible">
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirme a senha"
-                  value={confirmarSenha}
-                  onChange={(e) => handleInputChange('confirmarSenha', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.confirmarSenha ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-2`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-5 top-2.75 text-gray-600 hover:text-gray-800 transition cursor-pointer"
-                >
-                  {showConfirmPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-                </button>
-                {errors.confirmarSenha && (
-                  <p className="absolute text-red-500 text-sm right-4 bottom-[-1.25rem] text-left">{errors.confirmarSenha}</p>
-                )}
-              </div>
-            </div>
+    <div className="min-h-screen flex items-center justify-center absolute z-10 px-4">
+      <div className="relative w-full max-w-5xl bg-white shadow-2xl rounded-xl p-8 animate-popup">
+        {/* Botão de Fechar */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
+        >
+          &times;
+        </button>
+
+        {/* Conteúdo */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Coluna Esquerda - Avatar */}
+          <div className="flex justify-center items-start pt-4">
+            <img
+              src={iconSrc}
+              alt={cargo === 'Administrador' ? 'Admin Icon' : 'User Icon'}
+              className="w-48 h-48 object-contain"
+            />
           </div>
-        </div>
-        <div className="flex flex-row">
-          <div className="pt-1 pl-15">
-            <label className="block text-gray-700 text-sm font-semibold mb-1 text-xl">CPF:</label>
-            <div className="w-100 relative overflow-visible">
+
+          {/* Coluna Direita - Formulário */}
+          <div className="space-y-4">
+            {/* Nome */}
+            <div>
+              <label className="text-lg font-semibold text-gray-700">Nome:</label>
               <input
                 type="text"
-                placeholder="Adicione o CPF"
-                value={cpf}
-                onChange={handleCpfChange}
-                className={`w-full px-4 py-2 border ${errors.cpf ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-2`}
-                maxLength={14}
+                placeholder="Adicione um nome completo"
+                value={nome}
+                onChange={(e) => handleInputChange('nome', e.target.value)}
+                className={`w-full px-4 py-2 mt-1 border ${errors.nome ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
               />
-              {errors.cpf && (
-                <p className="absolute text-red-500 text-sm right-4 bottom-[-1.25rem] text-left">{errors.cpf}</p>
-              )}
             </div>
-          </div>
-          <div className="pt-1 pl-25">
-            <label className="block text-gray-700 text-sm font-semibold mb-1 text-xl">Cargo:</label>
-            <div className="w-99 relative overflow-visible">
+
+            {/* Senha */}
+            <div className="relative">
+              <label className="text-lg font-semibold text-gray-700">Senha:</label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Insira uma senha"
+                value={senha}
+                onChange={(e) => handleInputChange('senha', e.target.value)}
+                className={`w-full px-4 py-2 mt-1 border ${errors.senha ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute top-9 right-4 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
+            </div>
+
+            {/* Confirmar Senha */}
+            <div className="relative">
+              <label className="text-lg font-semibold text-gray-700">Confirmar Senha:</label>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                placeholder="Confirme a senha"
+                value={confirmarSenha}
+                onChange={(e) => handleInputChange('confirmarSenha', e.target.value)}
+                className={`w-full px-4 py-2 mt-1 border ${errors.confirmarSenha ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute top-9 right-4 text-gray-500 hover:text-gray-700"
+              >
+                {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
+            </div>
+
+            {/* Cargo */}
+            <div>
+              <label className="text-lg font-semibold text-gray-700">Cargo:</label>
               <select
                 value={cargo}
                 onChange={(e) => handleInputChange('cargo', e.target.value)}
-                className={`w-full px-4 py-2 border ${errors.cargo ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-2 text-gray-700`}
+                className={`w-full px-4 py-2 mt-1 border ${errors.cargo ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
               >
                 <option value="" disabled>Selecione um Cargo</option>
-                <option value="desenvolvedor">Administrador</option>
-                <option value="gerente">Viewer</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Visualizador">Visualizador</option>
               </select>
-              {errors.cargo && (
-                <p className="absolute text-red-500 text-sm right-4 bottom-[-1.25rem] text-left">{errors.cargo}</p>
-              )}
             </div>
-          </div>
-        </div>
-        <div className="flex flex-row">
-          <div className="w-full pt-1 pl-15">
-            <label className="block text-gray-700 text-sm font-semibold mb-1 text-xl">Email:</label>
-            <div className="w-150 relative overflow-visible">
+
+            {/* Email */}
+            <div>
+              <label className="text-lg font-semibold text-gray-700">Email:</label>
               <input
                 type="text"
-                placeholder="Adicione um Email"
+                placeholder="Adicione um email"
                 value={email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className={`w-full px-4 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-2`}
+                className={`w-full px-4 py-2 mt-1 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
               />
-              {errors.email && (
-                <p className="absolute text-red-500 text-sm right-4 bottom-[-1.25rem] text-left">{errors.email}</p>
-              )}
             </div>
-          </div>
-          <div className="w-full pt-8 pl-15 pr-12.5 flex justify-end">
-            <button
-              type="submit"
-              className="w-35 h-11.5 gap-2 text-xl font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition flex items-center cursor-pointer justify-center"
-              onClick={handleCreate}
-            >
-              <BiUserPlus size={30} />
-              Criar
-            </button>
+
+            {/* Botão Criar/Salvar */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                <BiUserPlus size={22} />
+                {userToEdit ? "Salvar" : "Criar"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
       <style>
         {`
           @keyframes popup {
-            0% {
-              opacity: 0;
-              transform: scale(0.8);
-            }
-            50% {
-              opacity: 8;
-              transform: scale(1.03);
-            }
-            100% {
-              opacity: 1;
-              transform: scale(1);
-            }
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
           }
           .animate-popup {
-            animation: popup 0.35s ease-out;
+            animation: popup 0.3s ease-out;
           }
         `}
       </style>

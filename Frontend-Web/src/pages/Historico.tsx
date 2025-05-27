@@ -18,119 +18,16 @@ interface HistoryItem {
     tecnico_atribuido: string;
 }
 
-const dadosTabela: HistoryItem[] = [
-    {
-        id: 1,
-        titulo: 'Manutenção de Servidor',
-        entidade: 'Empresa ABC',
-        categoria: 'Manutenção',
-        localizacao: 'São Paulo, SP',
-        data_abertura: '2025-04-01',
-        data_fechamento: '2025-04-05',
-        status: 'Concluído',
-        descricao: 'Manutenção preventiva no servidor principal.',
-        elementos_associados: ['Servidor X', 'Roteador Y'],
-        tecnico_atribuido: 'João Silva',
-    },
-    {
-        id: 2,
-        titulo: 'Atualização de Software',
-        entidade: 'Empresa XYZ',
-        categoria: 'Desenvolvimento',
-        localizacao: 'Rio de Janeiro, RJ',
-        data_abertura: '2025-04-10',
-        data_fechamento: '2025-04-15',
-        status: 'Aberto',
-        descricao: 'Atualização do sistema ERP para versão 2.1.',
-        elementos_associados: ['ERP', 'Banco de Dados'],
-        tecnico_atribuido: 'Maria Oliveira',
-    },
-    {
-        id: 3,
-        titulo: 'Troca de Equipamento',
-        entidade: 'Empresa 123',
-        categoria: 'Infraestrutura',
-        localizacao: 'Belo Horizonte, MG',
-        data_abertura: '2025-04-20',
-        data_fechamento: null,
-        status: 'Aberto',
-        descricao: 'Substituição de switch de rede obsoleto.',
-        elementos_associados: ['Switch Z'],
-        tecnico_atribuido: 'Carlos Souza',
-    },
-    {
-        id: 4,
-        titulo: 'Instalação de Firewall',
-        entidade: 'Tech Solutions',
-        categoria: 'Segurança',
-        localizacao: 'Curitiba, PR',
-        data_abertura: '2025-04-25',
-        data_fechamento: null,
-        status: 'Aberto',
-        descricao: 'Configuração e instalação de um novo firewall para proteger a rede interna.',
-        elementos_associados: ['Firewall Cisco', 'Roteador Principal'],
-        tecnico_atribuido: 'Ana Costa',
-    },
-    {
-        id: 5,
-        titulo: 'Backup de Dados',
-        entidade: 'Indústria Beta',
-        categoria: 'Manutenção',
-        localizacao: 'Porto Alegre, RS',
-        data_abertura: '2025-04-12',
-        data_fechamento: '2025-04-14',
-        status: 'Concluído',
-        descricao: 'Realização de backup completo dos dados da empresa para storage externo.',
-        elementos_associados: ['Storage NAS', 'Servidor de Backup'],
-        tecnico_atribuido: 'Pedro Almeida',
-    },
-    {
-        id: 6,
-        titulo: 'Migração de Banco de Dados',
-        entidade: 'Startup Innovate',
-        categoria: 'Desenvolvimento',
-        localizacao: 'Florianópolis, SC',
-        data_abertura: '2025-04-18',
-        data_fechamento: null,
-        status: 'Aberto',
-        descricao: 'Migração do banco de dados MySQL para PostgreSQL para melhorar performance.',
-        elementos_associados: ['MySQL', 'PostgreSQL'],
-        tecnico_atribuido: 'Lucas Mendes',
-    },
-    {
-        id: 7,
-        titulo: 'Treinamento de Equipe',
-        entidade: 'Consultoria Delta',
-        categoria: 'Capacitação',
-        localizacao: 'Recife, PE',
-        data_abertura: '2025-04-05',
-        data_fechamento: '2025-04-10',
-        status: 'Concluído',
-        descricao: 'Treinamento da equipe de TI sobre novas ferramentas de monitoramento.',
-        elementos_associados: ['Software de Monitoramento', 'Documentação'],
-        tecnico_atribuido: 'Fernanda Lima',
-    },
-    {
-        id: 8,
-        titulo: 'Configuração de VPN',
-        entidade: 'Grupo Omega',
-        categoria: 'Infraestrutura',
-        localizacao: 'Salvador, BA',
-        data_abertura: '2025-04-22',
-        data_fechamento: null,
-        status: 'Aberto',
-        descricao: 'Configuração de uma VPN para acesso remoto seguro dos funcionários.',
-        elementos_associados: ['Servidor VPN', 'Certificados de Segurança'],
-        tecnico_atribuido: 'Rafael Santos',
-    },
-];
+
 
 const HistoricTable: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [sortField, setSortField] = useState<keyof HistoryItem | null>(null);
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const itemsPerPage = 6;
+    const [dadosTabela, setDadosTabela] = useState<HistoryItem[]>([]);
+
+    const itemsPerPage = 12;
 
     // Filtrar itens
     const filteredItems = dadosTabela.filter((item) =>
@@ -142,6 +39,30 @@ const HistoricTable: React.FC = () => {
                     value.some((v) => typeof v === 'string' && v.toLowerCase().includes(searchQuery.toLowerCase())))
         )
     );
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:3003/chamados/abertos');
+                const data = await response.json();
+
+                // Mapeia os dados se necessário (ex: transforma string em array para `elementos_associados`)
+                const dadosFormatados: HistoryItem[] = data.map((item: any) => ({
+                    ...item,
+                    elementos_associados: typeof item.elementos_associados === 'string'
+                        ? item.elementos_associados.split(',').map((el: string) => el.trim())
+                        : item.elementos_associados || [],
+                }));
+
+                setDadosTabela(dadosFormatados);
+            } catch (error) {
+                console.error('Erro ao buscar dados da API:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
 
     // Ordenar itens
     const sortedItems = [...filteredItems].sort((a, b) => {
@@ -221,7 +142,7 @@ const HistoricTable: React.FC = () => {
             <main className="flex-grow p-6">
                 {/* Campo de busca com ícone */}
                 <div className="flex flex-row w-full justify-between">
-                    <div className="mb-4 relative">
+                    <div className="mb-4 relative left-30">
                         <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                         <input
                             type="text"

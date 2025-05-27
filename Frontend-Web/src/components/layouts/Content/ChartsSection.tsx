@@ -128,7 +128,7 @@ const ChartsSection: React.FC = () => {
     };
 
   }
-
+  console.log("Dados do Dashboard:", dashboardData);
   return (
     <section className="w-full min-h-screen bg-white p-10">
       {import.meta.env.DEV && error && (

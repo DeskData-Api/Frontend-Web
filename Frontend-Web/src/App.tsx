@@ -3,10 +3,9 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile"
-import CrudUsuario from "./components/CrudUsuario";
+// import CrudUsuario from "./components/CrudUsuario";
 import Historico from "./pages/Historico"
 import InputCsv from "./pages/InputCsv";
-
 
 function App() {
   return (
@@ -17,7 +16,7 @@ function App() {
       <Route path="/usuarios" element={<Users />} />
       <Route path="/inserircsv" element={<InputCsv />} />
       <Route path="/profile" element={<Profile />} />
-      <Route path="/crud" element={<CrudUsuario />} />
+      {/* <Route path="/crud" element={<CrudUsuario />} /> */}
 
     </Routes>
   );
