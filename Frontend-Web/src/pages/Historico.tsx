@@ -41,27 +41,35 @@ const HistoricTable: React.FC = () => {
     );
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('http://localhost:3003/chamados/abertos');
-                const data = await response.json();
+    const fetchData = async () => {
+        try {
+            const url = searchQuery
+                ? `http://localhost:8000/busca?q=${encodeURIComponent(searchQuery)}`
+                : 'http://localhost:3003/chamados/abertos';
 
-                // Mapeia os dados se necessário (ex: transforma string em array para `elementos_associados`)
-                const dadosFormatados: HistoryItem[] = data.map((item: any) => ({
-                    ...item,
-                    elementos_associados: typeof item.elementos_associados === 'string'
-                        ? item.elementos_associados.split(',').map((el: string) => el.trim())
-                        : item.elementos_associados || [],
-                }));
+            const response = await fetch(url);
+            const data = await response.json();
 
-                setDadosTabela(dadosFormatados);
-            } catch (error) {
-                console.error('Erro ao buscar dados da API:', error);
-            }
-        };
+            const dadosFormatados: HistoryItem[] = data.map((item: any) => ({
+                ...item,
+                elementos_associados: typeof item.elementos_associados === 'string'
+                    ? item.elementos_associados.split(',').map((el: string) => el.trim())
+                    : item.elementos_associados || [],
+            }));
 
+            setDadosTabela(dadosFormatados);
+        } catch (error) {
+            console.error('Erro ao buscar dados da API:', error);
+        }
+    };
+
+    // Fazer busca com debounce (aguardar o usuário parar de digitar por 500ms)
+    const delayDebounce = setTimeout(() => {
         fetchData();
-    }, []);
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+}, [searchQuery]);
 
 
     // Ordenar itens
