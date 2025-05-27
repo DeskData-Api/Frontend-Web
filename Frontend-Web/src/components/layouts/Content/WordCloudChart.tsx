@@ -13,7 +13,7 @@ const WordCloudChart: React.FC<Props> = ({ title, words }) => {
   useEffect(() => {
     if (!words?.length) return;
 
-    const width = 500;
+    const width = 400;
     const height = 250;
 
     cloud<cloud.Word>()
