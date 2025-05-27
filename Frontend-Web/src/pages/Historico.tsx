@@ -49,8 +49,8 @@ const HistoricTable: React.FC = () => {
                     searchQuery
                         ? `http://localhost:8000/busca?q=${encodeURIComponent(searchQuery)}`
                         : user?.cargo === "Administrador"
-                            ? "http://localhost:3004/chamados/abertos"
-                            : `http://localhost:3004/chamados/tecnico/${encodeURIComponent(user?.nome ?? "")}`;
+                            ? "http://localhost:3003/chamados/abertos"
+                            : `http://localhost:3003/chamados/tecnico/${encodeURIComponent(user?.nome ?? "")}`;
                 const response = await fetch(url);
                 const data = await response.json();
 

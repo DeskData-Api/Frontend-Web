@@ -18,17 +18,19 @@ interface AuthContextType {
   user: TokenPayload | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<TokenPayload | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   const login = async (email: string, senha: string) => {
     try {
-      const response = await axios.post("http://localhost:3004/login", { email, senha });
+      const response = await axios.post("http://localhost:3003/login", { email, senha });
       const { token } = response.data;
 
       localStorage.setItem("token", token);
@@ -64,9 +66,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         logout();
       }
     }
+    setIsLoading(false);
   }, []);
 
-  const contextValue = useMemo(() => ({ user, login, logout }), [user]);
+  const contextValue = useMemo(() => ({ user, login, logout, isLoading }), [user, isLoading]);
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
