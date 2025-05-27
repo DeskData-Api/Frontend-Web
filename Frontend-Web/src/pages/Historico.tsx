@@ -3,6 +3,7 @@ import { FaSearch } from 'react-icons/fa';
 import HistoryCard from '../components/layouts/Content/HistoryCard';
 import Header from "../components/layouts/Header";
 import Footer from "../components/layouts/Footer";
+import { useAuth } from '../context/AuthContext';
 
 interface HistoryItem {
     id: number;
@@ -24,6 +25,7 @@ const HistoricTable: React.FC = () => {
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [dadosTabela, setDadosTabela] = useState<HistoryItem[]>([]);
+    const { user } = useAuth();
 
     const itemsPerPage = 12;
 
@@ -39,35 +41,41 @@ const HistoricTable: React.FC = () => {
     );
 
     useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const url = searchQuery
-                ? `http://localhost:8000/busca?q=${encodeURIComponent(searchQuery)}`
-                : 'http://localhost:3004/chamados/abertos';
+        if (!user) return;
 
-            const response = await fetch(url);
-            const data = await response.json();
+        const fetchData = async () => {
+            try {
+                const url =
+                    searchQuery
+                        ? `http://localhost:8000/busca?q=${encodeURIComponent(searchQuery)}`
+                        : user?.cargo === "Administrador"
+                            ? "http://localhost:3004/chamados/abertos"
+                            : `http://localhost:3004/chamados/tecnico/${encodeURIComponent(user?.nome ?? "")}`;
+                const response = await fetch(url);
+                const data = await response.json();
 
-            const dadosFormatados: HistoryItem[] = data.map((item: any) => ({
-                ...item,
-                elementos_associados: typeof item.elementos_associados === 'string'
-                    ? item.elementos_associados.split(',').map((el: string) => el.trim())
-                    : item.elementos_associados || [],
-            }));
+               
 
-            setDadosTabela(dadosFormatados);
-        } catch (error) {
-            console.error('Erro ao buscar dados da API:', error);
-        }
-    };
+                const dadosFormatados: HistoryItem[] = data.map((item: any) => ({
+                    ...item,
+                    elementos_associados: typeof item.elementos_associados === 'string'
+                        ? item.elementos_associados.split(',').map((el: string) => el.trim())
+                        : item.elementos_associados || [],
+                }));
 
-    // Fazer busca com debounce (aguardar o usuário parar de digitar por 500ms)
-    const delayDebounce = setTimeout(() => {
-        fetchData();
-    }, 500);
+                setDadosTabela(dadosFormatados);
+            } catch (error) {
+                console.error('Erro ao buscar dados da API:', error);
+            }
+        };
 
-    return () => clearTimeout(delayDebounce);
-}, [searchQuery]);
+        // Fazer busca com debounce (aguardar o usuário parar de digitar por 500ms)
+        const delayDebounce = setTimeout(() => {
+            fetchData();
+        }, 500);
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchQuery, user]);
 
 
     // Ordenar itens
@@ -191,12 +199,12 @@ const HistoricTable: React.FC = () => {
 
                 {/* Lista de cartões */}
                 <div className="flex flex-wrap gap-8 justify-center pb-20 pt-5">
-                {currentItems.map((item) => (
-                    <div key={item.id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center">
-                        <HistoryCard item={item} />
-                    </div>
-                ))}
-            </div>
+                    {currentItems.map((item) => (
+                        <div key={item.id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center">
+                            <HistoryCard item={item} />
+                        </div>
+                    ))}
+                </div>
 
                 {/* Controles de paginação fixos acima do footer */}
                 {totalPages > 1 && (
@@ -212,9 +220,8 @@ const HistoricTable: React.FC = () => {
                             <button
                                 key={page}
                                 onClick={() => handlePageChange(page)}
-                                className={`px-4 py-2 rounded-lg ${
-                                    currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'
-                                }`}
+                                className={`px-4 py-2 rounded-lg ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'
+                                    }`}
                             >
                                 {page}
                             </button>
