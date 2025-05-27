@@ -201,59 +201,18 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data, showXAxisLabel
     );
   }
 
-  if (type === "heatmap") {
-    const chartSeries = data
-      .filter((item) => item.qtd !== undefined && !isNaN(item.qtd) && item.qtd >= 0)
-      .map((item, i) => ({
-        name: item.name || `Par ${i + 1}`,
-        data: [{ x: "Similaridade", y: item.qtd }],
-      }));
-
-    const chartOptions: ApexOptions = {
-      chart: {
-        type: "heatmap",
-        fontFamily: "Poppins, sans-serif",
-        toolbar: { show: false },
-      },
-      dataLabels: {
-        enabled: true,
-      },
-      colors: ["#0070f3", "#00bfa5", "#ffb400", "#ff6f61", "#7f00ff"],
-      xaxis: {
-        labels: {
-          style: {
-            fontFamily: "Poppins, sans-serif",
-          },
-        },
-      },
-      yaxis: {
-        labels: {
-          style: {
-            fontFamily: "Poppins, sans-serif",
-            fontSize: "10px",
-          },
-        },
-      },
-      tooltip: {
-        style: {
-          fontFamily: "Poppins, sans-serif",
-        },
-      },
-    };
-
-    // Gráficos padrão com ApexChart
-    return (
-      <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col h-[350px]">
-        <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
-        <ReactApexChart
-          options={chartOptions}
-          series={chartSeries}
-          type="heatmap"
-          height={300}
-        />
-      </div>
-    );
-  };
+  // Gráficos padrão com ApexChart
+  return (
+    <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col h-[350px]">
+      <h2 className="text-lg font-semibold font-montserrat text-gray-800 mb-3">{title}</h2>
+      <ReactApexChart
+        options={chartOptions}
+        series={chartSeries}
+        type={type}
+        height={250}
+      />
+    </div>
+  );
 };
 
 export default ChartCard;

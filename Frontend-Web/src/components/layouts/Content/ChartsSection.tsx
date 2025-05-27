@@ -60,7 +60,7 @@ const ChartsSection: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch("http://localhost:3003/chamados/dashboard");
+        const response = await fetch("http://localhost:3004/chamados/dashboard");
         if (!response.ok) {
           throw new Error("Erro ao buscar dados do dashboard");
         }
@@ -128,7 +128,7 @@ const ChartsSection: React.FC = () => {
     };
 
   }
-  console.log("Dados do Dashboard:", dashboardData);
+  console.log(dadosOrdenados)
   return (
     <section className="w-full min-h-screen bg-white p-10">
       {import.meta.env.DEV && error && (
@@ -197,12 +197,13 @@ const ChartsSection: React.FC = () => {
           type="wordcloud"
           data={palavrasFrequentes}
         />
+        
         {distribuicao_temporal && (
           <div className="lg:col-span-2 col-span-1">
             <ChartCard
               title="Categoria Mais Citada por Quinzena"
               type="line"
-              showXAxisLabels={false}
+              showXAxisLabels={true}
               data={dadosOrdenados.map(item=> ({
                 name: item.name,
                 qtd: item.qtd,
@@ -214,27 +215,13 @@ const ChartsSection: React.FC = () => {
 
         <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
 
-        {/* <div className="lg:col-span-2 col-span-1">
-          <ChartCard
-            title="Tempo Médio por Categoria"
-            type="boxplot"
-            data={dashboardData.tempoPorCategoria}
-          />
-          </div> */}
-
-        <div className="lg:col-span-2 col-span-1">
+        <div className="lg:col-span-3 col-span-1">
           <ChartCard
             title="Categorias com maior incidência"
             type="bar"
             data={dashboardData.top5Categorias}
           />
         </div>
-
-        <ChartCard
-          title="Similaridade entre Chamados"
-          type="heatmap"
-          data={dashboardData.similaridadeChamados}
-        />
       </div>
     </section>
   );

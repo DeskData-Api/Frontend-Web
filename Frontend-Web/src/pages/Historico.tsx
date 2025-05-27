@@ -18,8 +18,6 @@ interface HistoryItem {
     tecnico_atribuido: string;
 }
 
-
-
 const HistoricTable: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [sortField, setSortField] = useState<keyof HistoryItem | null>(null);
@@ -45,7 +43,7 @@ const HistoricTable: React.FC = () => {
         try {
             const url = searchQuery
                 ? `http://localhost:8000/busca?q=${encodeURIComponent(searchQuery)}`
-                : 'http://localhost:3003/chamados/abertos';
+                : 'http://localhost:3004/chamados/abertos';
 
             const response = await fetch(url);
             const data = await response.json();

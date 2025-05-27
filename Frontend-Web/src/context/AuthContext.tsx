@@ -1,9 +1,21 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
+// Interface com base no token que você recebe
+interface TokenPayload {
+  id: number;
+  nome: string;
+  email: string;
+  senha: string;
+  cargo: string;
+  data_criacao: string;
+  iat: number;
+}
 
 interface AuthContextType {
-  user: { role: string } | null;
+  user: TokenPayload | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -11,32 +23,25 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<{ role: string } | null>(null);
+  const [user, setUser] = useState<TokenPayload | null>(null);
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  //     axios
-  //       .get("http://localhost:5000/me") // Backend precisa dessa rota
-  //       .then((response) => setUser(response.data))
-  //       .catch(() => logout());
-  //   }
-  // }, []);
 
   const login = async (email: string, senha: string) => {
     try {
-      const response = await axios.post("http://localhost:3003/login", { email, senha });
-      const { token, role } = response.data;
+      const response = await axios.post("http://localhost:3004/login", { email, senha });
+      const { token } = response.data;
 
       localStorage.setItem("token", token);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      // setUser({ role });
+      const decoded = jwtDecode<TokenPayload>(token);
+      console.log("Payload do token:", decoded);
+      setUser(decoded);
+
       navigate("/dashboard");
     } catch (error) {
       alert("Falha na autenticação!");
+      console.error("Erro ao fazer login:", error);
     }
   };
 
@@ -47,7 +52,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     navigate("/");
   };
 
-  // 🚀 Memoriza o objeto para evitar recriação a cada render
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        const decoded = jwtDecode<TokenPayload>(token);
+        setUser(decoded);
+      } catch (err) {
+        console.error("Token inválido:", err);
+        logout();
+      }
+    }
+  }, []);
+
   const contextValue = useMemo(() => ({ user, login, logout }), [user]);
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

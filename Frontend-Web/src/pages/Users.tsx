@@ -41,7 +41,7 @@ const Users: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3003/usuario/listar");
+        const response = await axios.get("http://localhost:3004/usuario/listar");
         setUsers(response.data);
       } catch (error) {
         console.error("Erro ao buscar usuários:", error);
