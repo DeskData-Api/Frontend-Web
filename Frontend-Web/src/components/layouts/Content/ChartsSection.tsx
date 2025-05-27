@@ -9,6 +9,7 @@ import LoadingScreen from "../../LoadingScreen";
 import { mockDashboardData } from "../../../mockData";
 import { formatarMes } from "../../../utils/formatters";
 import { formatarHorasMinutos } from "../../../utils/formatters";
+import TopicsWordClouds from "./TopicsWordClouds";
 
 interface Category {
   name: string;
@@ -33,6 +34,13 @@ interface mes {
   ordem: string; // Ex: "2023-09-01"
 }
 
+interface TopicResponse {
+  topico: string;
+  palavras: string[];
+}
+
+
+
 export interface DashboardData {
   total: number;
   abertos: number;
@@ -56,33 +64,46 @@ const ChartsSection: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [topics, setTopics] = useState<TopicResponse[]>([]);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await fetch("http://localhost:3004/chamados/dashboard");
-        if (!response.ok) {
-          throw new Error("Erro ao buscar dados do dashboard");
-        }
-        const data: DashboardData = await response.json();
-        setDashboardData(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido");
-        setLoading(false);
-        
-        // ✅ Fallback para mock em modo desenvolvimento (Vite)
-        if (import.meta.env.DEV) {
-          console.warn("Usando dados mockados em modo desenvolvimento.");
-          setDashboardData(mockDashboardData);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch("http://localhost:3004/chamados/dashboard");
+      if (!response.ok) throw new Error("Erro ao buscar dados do dashboard");
 
-    fetchDashboardData();
-  }, []);
+      const data: DashboardData = await response.json();
+      setDashboardData(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+
+      // ✅ Fallback para mock em modo desenvolvimento (Vite)
+      if (import.meta.env.DEV) {
+        console.warn("Usando dados mockados em modo desenvolvimento.");
+        setDashboardData(mockDashboardData);
+      }
+    }
+  };
+
+  const fetchTopics = async () => {
+    try {
+      const topicsRes = await fetch("http://localhost:5000/topicos");
+      if (topicsRes.ok) {
+        const topicsData: TopicResponse[] = await topicsRes.json();
+        setTopics(topicsData);
+      } else {
+        console.warn("Erro ao buscar tópicos:", topicsRes.status);
+      }
+    } catch (err) {
+      console.warn("Erro ao buscar tópicos LDA:", err);
+    }
+  };
+
+  // Executar as duas de forma independente
+  fetchDashboardData();
+  fetchTopics();
+  setLoading(false);
+}, []);
 
   if (loading) return <LoadingScreen />;
 
@@ -179,6 +200,8 @@ const ChartsSection: React.FC = () => {
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+
         {/* Histórico mensal de Chamados em destaque */}
         <div className="lg:col-span-2 col-span-1">
           <ChartCard
@@ -197,6 +220,10 @@ const ChartsSection: React.FC = () => {
           type="wordcloud"
           data={palavrasFrequentes}
         />
+
+       
+  
+
         
         {distribuicao_temporal && (
           <div className="lg:col-span-2 col-span-1">
@@ -221,7 +248,11 @@ const ChartsSection: React.FC = () => {
             type="bar"
             data={dashboardData.top5Categorias}
           />
-        </div>
+        </div>     
+
+        <TopicsWordClouds topics={topics} />
+
+       
       </div>
     </section>
   );
