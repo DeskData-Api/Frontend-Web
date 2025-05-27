@@ -27,7 +27,14 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data, showXAxisLabel
   const chartSeries =
     type === "pie"
       ? values
-      : [{ name: title, data: values }];
+      : [{
+        name: title,
+        data: data.map(item => ({
+          x: item.name ?? "",
+          y: item.qtd,
+          categoria: item.categoria ?? ""
+        }))
+      }];
 
   let chartOptions: ApexOptions = { chart: { type: type as ApexChart["type"] } };
 
@@ -94,9 +101,9 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data, showXAxisLabel
         },
         y: {
           formatter: (val: number, opts: any) => {
-            const categoria = Array.isArray(data) ? data[opts.dataPointIndex]?.categoria ?? '' : '';
-            return categoria
-              ? `${val} ocorrências (${categoria})`
+            const point = opts?.w?.globals?.initialSeries?.[opts.seriesIndex]?.data?.[opts.dataPointIndex];
+            return point?.categoria
+              ? `${val} ocorrências (${point.categoria})`
               : `${val} ocorrências`;
           }
         }
