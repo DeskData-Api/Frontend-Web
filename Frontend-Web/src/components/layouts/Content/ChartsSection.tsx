@@ -124,14 +124,14 @@ const ChartsSection: React.FC = () => {
       </div>
     );
   }
-  
+
   if (!dashboardData) return null;
 
   const palavrasFrequentes = dashboardData.chm?.[0]?.frequentes_problema || [];
   const distribuicao_temporal = dashboardData?.chm?.[0]?.distribuicao_temporal;
-  
-  let dadosOrdenados: { name: string; qtd: number; categoria: string; ordem?: string }[] = [];
-  
+
+  let dadosOrdenados: { name: string; qtd: number; quinzena: string; categoria: string; ordem?: string }[] = [];
+
   if (Array.isArray(distribuicao_temporal)) {
     dadosOrdenados = [...distribuicao_temporal].sort((a, b) =>
       new Date(a.ordem).getTime() - new Date(b.ordem).getTime()
@@ -149,7 +149,14 @@ const ChartsSection: React.FC = () => {
     };
 
   }
-  console.log(dadosOrdenados)
+
+  const formatarQuinzena = (texto: string) =>
+  texto.replace(
+    /(\d{2})\/(\d{4}) \((\dª) Quinzena\)/,
+    (_, mes, ano, quinzena) => `${mes}/${ano.slice(2)} - ${quinzena === '1ª' ? 'Q1' : 'Q2'}`
+  );
+
+
   return (
     <section className="w-full min-h-screen bg-white p-10">
       {import.meta.env.DEV && error && (
@@ -157,23 +164,23 @@ const ChartsSection: React.FC = () => {
           ⚠️ Modo desenvolvimento: dados mockados em uso
         </div>
       )}
-      
+
       {/* Blocos de Indicadores */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <InfoBlock 
+        <InfoBlock
           title="Total de Chamados"
           value={dashboardData.total}
-          unit="chamados" 
+          unit="chamados"
           icon1={Pie_chart}
-          />
+        />
 
-        <InfoBlock 
-          title="Chamados Abertos" 
-          value={dashboardData.abertos} 
-          unit="em aberto" 
-          color="#D08700" 
+        <InfoBlock
+          title="Chamados Abertos"
+          value={dashboardData.abertos}
+          unit="em aberto"
+          color="#D08700"
           icon1={ChamadosAbertosIcone}
-          />
+        />
 
         <InfoBlock
           title="Chamados Fechados"
@@ -231,8 +238,8 @@ const ChartsSection: React.FC = () => {
               title="Categoria Mais Citada por Quinzena"
               type="line"
               showXAxisLabels={true}
-              data={dadosOrdenados.map(item=> ({
-                name: item.name,
+              data={dadosOrdenados.map(item => ({
+                name: formatarQuinzena(item.quinzena),
                 qtd: item.qtd,
                 categoria: item.categoria
               }))}

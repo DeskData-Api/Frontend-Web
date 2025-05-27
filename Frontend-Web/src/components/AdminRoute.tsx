@@ -6,7 +6,11 @@ interface AdminRouteProps {
 }
 
 const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Carregando...</div>; // ou spinner
+  }
 
   if (!user) {
     // Usuário não está logado

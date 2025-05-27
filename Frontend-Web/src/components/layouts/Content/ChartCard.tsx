@@ -69,6 +69,8 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data, showXAxisLabel
       colors: colorByTitle[title] ?? customColors,
       xaxis: {
         categories,
+        min: 4, // índice inicial (ex: mostrar a partir da 5ª quinzena)
+        max: 10, // índice final (ex: mostrar até a 11ª quinzena)
         labels: {
           show: showXAxisLabels ?? true, // ← exibe por padrão, oculta se false
           style: {
@@ -101,7 +103,7 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data, showXAxisLabel
       }
     };
   }
-  
+
 
   if (type === "wordcloud") {
     return (
@@ -110,8 +112,8 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, type, data, showXAxisLabel
         <WordCloudSafe data={data as any} />
       </div>
     );
-  }  
-  
+  }
+
 
   if (type === "boxplot") {
     const agrupado: { [key: string]: number[] } = {};

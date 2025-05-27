@@ -1,7 +1,7 @@
 // Users.tsx
 import Header from "../components/layouts/Header";
 import Footer from "../components/layouts/Footer";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import CrudUsuario from "../components/CrudUsuario";
 import React, { useState, useEffect } from "react";
@@ -41,7 +41,7 @@ const Users: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3004/usuario/listar");
+        const response = await axios.get("http://localhost:3003/usuario/listar");
         setUsers(response.data);
       } catch (error) {
         console.error("Erro ao buscar usuários:", error);
@@ -101,13 +101,16 @@ const Users: React.FC = () => {
         <div className="flex justify-between items-start flex-col sm:flex-row mb-6 gap-4">
           <div>
             <h1 className="text-2xl font-bold font-montserrat mb-2">Gerenciamento de Usuários</h1>
-            <input
-              type="text"
-              placeholder="Buscar usuário..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border p-1 rounded w-full md:w-64 font-montserrat"
-            />
+            <div className="mb-4 relative">
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar usuário..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-1/3 p-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-100 shadow-sm"
+              />
+            </div>
           </div>
           <button
             onClick={toggleCrud}
@@ -116,15 +119,16 @@ const Users: React.FC = () => {
             <FaPlus /> Criar Usuário
           </button>
         </div>
-        <DataTable
-          columns={columns}
-          data={filteredUsers}
-          pagination
-          highlightOnHover
-          striped
-          responsive
-          className="rounded border shadow-sm"
-        />
+        <div className="w-full max-w-full p-2 pl-10 border border-gray-300 rounded-lg shadow-sm">
+          <DataTable
+            columns={columns}
+            data={filteredUsers}
+            pagination
+            highlightOnHover
+            striped
+            responsive
+          />
+        </div>
       </div>
       <Footer />
     </div>
