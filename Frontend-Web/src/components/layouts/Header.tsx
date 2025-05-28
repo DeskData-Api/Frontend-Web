@@ -2,16 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/images/LogoAPI.png";
-import avatar from "../../assets/react.svg";
+import avatar from "../../assets/images/user.png";
 import EditAccountModal from "../../pages/Profile"; // Importação do Modal
 
 const Header: React.FC = () => {
     const [DropdownOpen, setDropdownOpen] = useState(false);
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const location = useLocation();
 
-    const user = {
-        name: "João Silva",
+    const userHeader = {
+        name: user?.nome ?? "Usuário",
         avatar: avatar,
     };
 
@@ -31,7 +31,7 @@ const Header: React.FC = () => {
 
     return (
         <header className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center shadow-md">
-            <div className="flex items-center font-rubik gap-6">
+            <div className="flex items-center gap-6">
                 <Link to="/">
                     <img src={logo} alt="Logo" className="h-10 w-auto" />
                 </Link>
@@ -47,27 +47,51 @@ const Header: React.FC = () => {
                     >
                         Dashboard
                     </Link>
+                    {user?.cargo === "Administrador" && (
+                        <Link
+                            to="/usuarios"
+                            className={`relative hover:text-gray-300 transition ${
+                                location.pathname === "/usuarios"
+                                    ? "after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-white"
+                                    : ""
+                            }`}
+                        >
+                            Usuários
+                        </Link>
+                    )}
                     <Link
-                        to="/usuarios"
+                        to="/historico"
                         className={`relative hover:text-gray-300 transition ${
-                            location.pathname === "/usuarios"
+                            location.pathname === "/historico"
                                 ? "after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-white"
                                 : ""
                         }`}
                     >
-                        Usuários
+                        Histórico de chamados
                     </Link>
+                    {user?.cargo === "Administrador" && (
+                        <Link
+                            to="/inserircsv"
+                            className={`relative hover:text-gray-300 transition ${
+                                location.pathname === "/inserircsv"
+                                    ? "after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-white"
+                                    : ""
+                            }`}
+                        >
+                            Inserir CSV
+                        </Link>
+                    )}
                 </nav>
             </div>
 
             <div className="relative flex items-center gap-2" ref={dropdownRef}>
-                <span className="text-sm font-medium">{user.name}</span>
+                <span className="text-sm font-medium">{userHeader.name}</span>
                 <button
                     onClick={() => setDropdownOpen(!DropdownOpen)}
                     className="focus:outline-none cursor-pointer"
                 >
                     <img
-                        src={user.avatar}
+                        src={userHeader.avatar}
                         alt="Usuário"
                         className="h-10 w-10 rounded-full border-2 border-gray-400 hover:border-white transition"
                     />
@@ -76,17 +100,6 @@ const Header: React.FC = () => {
                 {DropdownOpen && (
                     <div className="absolute right-0 mt-2 w-40 bg-white text-gray-800 shadow-lg rounded-md">
                         <ul>
-                            <li>
-                                <button
-                                    onClick={() => {
-                                        setIsEditModalOpen(true);
-                                        setDropdownOpen(false);
-                                    }}
-                                    className="block w-full text-left px-4 py-2 hover:bg-gray-200"
-                                >
-                                    Editar Conta
-                                </button>
-                            </li>
                             <li>
                                 <button
                                     onClick={logout}
@@ -104,7 +117,7 @@ const Header: React.FC = () => {
             <EditAccountModal
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
-                user={user}
+                user={userHeader}
             />
         </header>
     );

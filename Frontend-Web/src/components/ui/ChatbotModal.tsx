@@ -36,7 +36,7 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-end bg-opacity-10 transition-all duration-300 z-50 ease-in-out pr-[40px] ${
+      className={`fixed inset-0 flex items-center justify-end bg-opacity-10 transition-all duration-300 ease-in-out pr-[40px] ${
         isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       }`}
       onClick={handleOutsideClick}
@@ -47,7 +47,7 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
         }`}
         style={{ backgroundColor: "rgba(230, 230, 230, 0.9)" }}
       >
-        <h2 className="text-2xl font-bold font-rubik mb-4 text-gray-800 flex justify-center items-center ">Chatbot</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 flex justify-center items-center ">Chatbot</h2>
 
         <div className="h-155 overflow-y-auto border p-4 rounded-t-xl bg-gray-100">
           {responses.length === 0 ? (

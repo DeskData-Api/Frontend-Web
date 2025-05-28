@@ -11,3 +11,8 @@ export const formatarMes = (valor: string): string => {
     return `${nomesMeses[indice]}/${ano}`;
   };
   
+export function formatarHorasMinutos(decimalHoras: number): string {
+  const horas = Math.floor(decimalHoras);
+  const minutos = Math.round((decimalHoras - horas) * 60);
+  return `${horas}h ${minutos}min`;
+}

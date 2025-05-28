@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import ChartCard from "./ChartCard";
 import InfoBlock from "./InfoBlock";
+import ChamadosFechadosIcone from "../../../assets/icons/chamados_fechados.png"
+import ChamadosAbertosIcone from "../../../assets/icons/chamados_abertos.png"
+import Hour_glass from "../../../assets/icons/hour-glass.png"
+import Pie_chart from "../../../assets/icons/pie-chart.png"
 import LoadingScreen from "../../LoadingScreen";
 import { mockDashboardData } from "../../../mockData";
 import { formatarMes } from "../../../utils/formatters";
+import { formatarHorasMinutos } from "../../../utils/formatters";
+import TopicsWordClouds from "./TopicsWordClouds";
 
 interface Category {
   name: string;
@@ -20,52 +26,84 @@ interface ChamadosPorMes {
   qtd: number;
 }
 
+interface mes {
+  name: string; // Ex: "2023-09"
+  qtd: number;
+  categoria: string;
+  quinzena: string; // Ex: "2023-09-01"
+  ordem: string; // Ex: "2023-09-01"
+}
+
+interface TopicResponse {
+  topico: string;
+  palavras: string[];
+}
+
+
+
 export interface DashboardData {
   total: number;
   abertos: number;
   fechados: number;
-  resolvidos: number;
   top5Categorias: Category[];
   top5Elementos: Elements[];
-  chamadosPorMes: ChamadosPorMes[];
+  chamadosPorMes: ChamadosPorMes[]; // Adicionado
   tempoMedio?: number;
   colaboradores: Category[];
   palavrasFrequentes: Category[];
   tempoPorCategoria: Category[];
   similaridadeChamados: Category[];
+  chm: {
+    id: number;
+    frequentes_problema: Category[];
+    distribuicao_temporal: mes[];
+  }[];
 }
 
 const ChartsSection: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [topics, setTopics] = useState<TopicResponse[]>([]);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/chamados/dashboard`);
-        if (!response.ok) {
-          throw new Error("Erro ao buscar dados do dashboard");
-        }
-        const data: DashboardData = await response.json();
-        setDashboardData(data);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Erro desconhecido";
-        console.error("Erro ao buscar dados do dashboard:", msg);
-        setError(msg);
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch("http://localhost:3004/chamados/dashboard");
+      if (!response.ok) throw new Error("Erro ao buscar dados do dashboard");
 
-        // ✅ Fallback para mock em modo desenvolvimento (Vite)
-        if (import.meta.env.DEV) {
-          console.warn("Usando dados mockados em modo desenvolvimento.");
-          setDashboardData(mockDashboardData);
-        }
-      } finally {
-        setLoading(false);
+      const data: DashboardData = await response.json();
+      setDashboardData(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+
+      // ✅ Fallback para mock em modo desenvolvimento (Vite)
+      if (import.meta.env.DEV) {
+        console.warn("Usando dados mockados em modo desenvolvimento.");
+        setDashboardData(mockDashboardData);
       }
-    };
+    }
+  };
 
-    fetchDashboardData();
-  }, []);
+  const fetchTopics = async () => {
+    try {
+      const topicsRes = await fetch("http://localhost:5000/topicos");
+      if (topicsRes.ok) {
+        const topicsData: TopicResponse[] = await topicsRes.json();
+        setTopics(topicsData);
+      } else {
+        console.warn("Erro ao buscar tópicos:", topicsRes.status);
+      }
+    } catch (err) {
+      console.warn("Erro ao buscar tópicos LDA:", err);
+    }
+  };
+
+  // Executar as duas de forma independente
+  fetchDashboardData();
+  fetchTopics();
+  setLoading(false);
+}, []);
 
   if (loading) return <LoadingScreen />;
 
@@ -89,6 +127,36 @@ const ChartsSection: React.FC = () => {
 
   if (!dashboardData) return null;
 
+  const palavrasFrequentes = dashboardData.chm?.[0]?.frequentes_problema || [];
+  const distribuicao_temporal = dashboardData?.chm?.[0]?.distribuicao_temporal;
+
+  let dadosOrdenados: { name: string; qtd: number; quinzena: string; categoria: string; ordem?: string }[] = [];
+
+  if (Array.isArray(distribuicao_temporal)) {
+    dadosOrdenados = [...distribuicao_temporal].sort((a, b) =>
+      new Date(a.ordem).getTime() - new Date(b.ordem).getTime()
+    );
+  }
+
+  const TimeFormatFix = (time: number) => {
+    const decimal = time % 1;
+    const minutos = decimal * 60;
+    const Horas = Math.floor(time);
+
+    return {
+      horas: Horas,
+      minutos: Math.round(minutos)
+    };
+
+  }
+
+  const formatarQuinzena = (texto: string) =>
+  texto.replace(
+    /(\d{2})\/(\d{4}) \((\dª) Quinzena\)/,
+    (_, mes, ano, quinzena) => `${mes}/${ano.slice(2)} - ${quinzena === '1ª' ? 'Q1' : 'Q2'}`
+  );
+
+
   return (
     <section className="w-full min-h-screen bg-white p-10">
       {import.meta.env.DEV && error && (
@@ -99,23 +167,54 @@ const ChartsSection: React.FC = () => {
 
       {/* Blocos de Indicadores */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <InfoBlock title="Total de Chamados" value={dashboardData.total} unit="chamados" />
-        <InfoBlock title="Chamados Abertos" value={dashboardData.abertos} unit="em aberto" />
-        <InfoBlock title="Chamados Fechados" value={dashboardData.fechados} unit="resolvidos" />
         <InfoBlock
-          title="Tempo Médio Resposta"
-          value={dashboardData.tempoMedio ?? "N/A"}
-          unit={dashboardData.tempoMedio !== undefined ? "horas" : ""}
+          title="Total de Chamados"
+          value={dashboardData.total}
+          unit="chamados"
+          icon1={Pie_chart}
+        />
+
+        <InfoBlock
+          title="Chamados Abertos"
+          value={dashboardData.abertos}
+          unit="em aberto"
+          color="#D08700"
+          icon1={ChamadosAbertosIcone}
+        />
+
+        <InfoBlock
+          title="Chamados Fechados"
+          value={dashboardData.fechados !== undefined ? dashboardData.fechados : "N/A"}
+          unit="resolvidos"
+          color="#5EA500"
+          icon2={ChamadosFechadosIcone}
+
+        />
+        <InfoBlock
+          title="Tempo Médio de Resposta"
+          value={
+            dashboardData.tempoMedio !== undefined
+              ? (() => {
+                const { horas, minutos } = TimeFormatFix(dashboardData.tempoMedio);
+                return `${horas}h ${minutos}m`;
+              })()
+              : "N/A"
+          }
+          unit="" // Unidade não é necessária, já que o texto inclui "horas" e "minutos"
+          icon2={Hour_glass}
         />
       </div>
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+
         {/* Histórico mensal de Chamados em destaque */}
         <div className="lg:col-span-2 col-span-1">
           <ChartCard
-            title="Histórico mensal de Chamados"
+            title="Histórico Mensal de Chamados"
             type="line"
+            showXAxisLabels={true}
             data={dashboardData.chamadosPorMes.map(item => ({
               ...item,
               name: formatarMes(item.name),
@@ -123,48 +222,46 @@ const ChartsSection: React.FC = () => {
           />
         </div>
 
-        {/* Gráfico: Status */}
         <ChartCard
-          title="Chamados por Status"
-          type="bar"
-          data={[
-            { name: "Abertos", qtd: dashboardData.abertos },
-            { name: "Fechados", qtd: dashboardData.fechados },
-          ]}
+          title="Nuvem de Palavras Frequentes"
+          type="wordcloud"
+          data={palavrasFrequentes}
         />
 
-        {/* Gráfico: Elementos */}
+       
+  
+
+        
+        {distribuicao_temporal && (
+          <div className="lg:col-span-2 col-span-1">
+            <ChartCard
+              title="Categoria Mais Citada por Quinzena"
+              type="line"
+              showXAxisLabels={true}
+              data={dadosOrdenados.map(item => ({
+                name: formatarQuinzena(item.quinzena),
+                qtd: item.qtd,
+                categoria: item.categoria
+              }))}
+            />
+          </div>
+        )}
+
         <ChartCard title="Elementos de Chamados" type="pie" data={dashboardData.top5Elementos} />
 
-        <div className="lg:col-span-2 col-span-1">
-        <ChartCard
-          title="Tempo Médio por Categoria"
-          type="boxplot"
-          data={dashboardData.tempoPorCategoria}
-        />
-        </div>
-
-        {/* Gráfico: Colaboradores */}
-
-        <div className="lg:col-span-2 col-span-1">
+        <div className="lg:col-span-3 col-span-1">
           <ChartCard
             title="Categorias com maior incidência"
             type="bar"
             data={dashboardData.top5Categorias}
           />
-        </div>
+        </div>     
 
-        {/* <ChartCard
-          title="Nuvem de Palavras Frequentes"
-          type="wordcloud"
-          data={dashboardData.palavrasFrequentes}
-        /> */}
+        <div className="lg:col-span-3 col-span-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <TopicsWordClouds topics={topics} />
+</div>
 
-        <ChartCard
-          title="Similaridade entre Chamados"
-          type="heatmap"
-          data={dashboardData.similaridadeChamados}
-        />
+       
       </div>
     </section>
   );
