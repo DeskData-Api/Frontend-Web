@@ -106,9 +106,9 @@ const CrudUsuario: React.FC<CrudUsuarioProps> = ({ onClose, userToEdit }) => {
 
     try {
       if (userToEdit) {
-        await axios.put(`http://localhost:3003/usuario/atualizar/${userToEdit.id}`, payload);
+        await axios.put(`${import.meta.env.VITE_API_URL}/usuario/atualizar/${userToEdit.id}`, payload);
       } else {
-        await axios.post("http://localhost:3003/usuario/criar", payload);
+        await axios.post(`${import.meta.env.VITE_API_URL}/usuario/criar`, payload);
       }
 
       onClose(); // fecha o popup imediatamente após sucesso

@@ -69,7 +69,7 @@ const ChartsSection: React.FC = () => {
   useEffect(() => {
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("http://localhost:3004/chamados/dashboard");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/chamados/dashboard`);
       if (!response.ok) throw new Error("Erro ao buscar dados do dashboard");
 
       const data: DashboardData = await response.json();

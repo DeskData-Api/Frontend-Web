@@ -31,7 +31,7 @@ const Users: React.FC = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:3003/usuario/deletar/${id}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/usuario/deletar/${id}`);
       setUsers(users.filter((user) => user.id !== id));
     } catch (error) {
       console.error("Erro ao excluir usuário:", error);
@@ -41,7 +41,7 @@ const Users: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3003/usuario/listar");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/usuario/listar`);
         setUsers(response.data);
       } catch (error) {
         console.error("Erro ao buscar usuários:", error);
